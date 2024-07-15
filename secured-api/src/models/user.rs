@@ -25,7 +25,7 @@ pub struct User {
     /// Date et heure de création du compte utilisateur.
     pub created_at: NaiveDateTime,
     /// Date et heure de la dernière mise à jour du compte utilisateur.
-    pub updated_at: Option<NaiveDateTime>,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(AsChangeset)]
