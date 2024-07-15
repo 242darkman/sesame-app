@@ -1,0 +1,30 @@
+[package]
+name = "diesel_example"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+actix-cors = "0.7.0"
+actix-web = "4.8.0"
+env_logger = "0.11.3"
+diesel = { version = "2.2.1", features = ["chrono", "postgres", "r2d2", "uuid"] }
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.118"
+dotenv = "0.15"
+r2d2 = "0.8"
+uuid = { version = "1.9.1", features = ["serde", "v4"] }
+chrono = { version = "0.4.38", features = ["serde"] }
+
+# Dependencies for authentication
+jwt = "0.16.0"
+hmac = "0.12.1"
+sha2 = "0.10.8"
+actix-web-httpauth = "0.8.2"
+actix-web-grants = "4.1.1"
+argonautica = "0.2.0"
+actix-web-middleware-keycloak-auth = "0.4.2"
+keycloak = "25.0.0"
+diesel-derive-enum = { version = "2.1.0", features = ["postgres"] }
+actix-web-actors = "4.3.0"
+reqwest = "0.12.5"
+async-std = { version = "1.12.0", features = ["attributes", "tokio1"] }
