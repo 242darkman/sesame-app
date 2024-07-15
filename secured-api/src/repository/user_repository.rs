@@ -1,4 +1,4 @@
-use crate::models::user::{NewUser, UpdateUser, User};
+/* use crate::models::user::{NewUser, UpdateUser, User};
 use crate::schema::users::dsl::*;
 use diesel::dsl::{count_star, now};
 use diesel::prelude::*;
@@ -157,3 +157,4 @@ impl UserRepository {
         diesel::delete(users.find(id_user)).execute(db_conn)
     }
 }
+ */

@@ -1,4 +1,4 @@
-use crate::models::user::UpdateUser;
+/* use crate::models::user::UpdateUser;
 use crate::utils::pagination_param::PaginationParams;
 use crate::{
     models::user::NewUser, repository::user_repository::UserRepository, utils::app_state::AppState,
@@ -226,3 +226,4 @@ pub async fn delete_user(user_id: web::Path<String>, pool: web::Data<AppState>) 
         Err(_) => HttpResponse::BadRequest().finish(),
     }
 }
+ */

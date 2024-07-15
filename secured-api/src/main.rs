@@ -9,9 +9,9 @@ mod controllers;
 mod models;
 mod repository;
 mod routes;
-mod schema;
 mod services;
 mod utils;
+mod web_socket_logic;
 
 /// The main entry point of the Actix-web application
 #[actix_web::main]
