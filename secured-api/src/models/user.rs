@@ -27,7 +27,6 @@ pub struct User {
     /// Date et heure de la dernière mise à jour du compte utilisateur.
     pub updated_at: NaiveDateTime,
 }
-
 #[derive(AsChangeset)]
 #[diesel(table_name = crate::schema::users)]
 pub struct UserChangeset {
@@ -37,7 +36,6 @@ pub struct UserChangeset {
     pub email: Option<String>,
     pub keycloak_uuid: Option<Uuid>,
 }
-
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::users)]
 pub struct NewUser {
