@@ -1,3 +1,4 @@
+use crate::schema::users;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
