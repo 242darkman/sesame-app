@@ -1,0 +1,42 @@
+.
+├── README.md
+├── analysis_options.yaml
+├── build
+│   ├── 574fc2377ef17b67df2769d9e7907272.cache.dill.track.dill
+│   ├── 7da365b920fe809f39abefbcedc6d259
+│   ├── c541300455ecee97428ee1f52857cb3f
+│   │   ├── _composite.stamp
+│   │   ├── gen_dart_plugin_registrant.stamp
+│   │   └── gen_localizations.stamp
+│   └── flutter_assets
+│       ├── fonts
+│       ├── packages
+│       │   └── cupertino_icons
+│       │       └── assets
+│       └── shaders
+├── client_app.iml
+├── lib
+│   ├── controllers
+│   │   ├── login_controller.dart
+│   │   └── register_controller.dart
+│   ├── main.dart
+│   ├── models
+│   ├── router
+│   ├── screens
+│   │   ├── auth
+│   │   │   └── auth_screen.dart
+│   │   └── home_screen.dart
+│   ├── services
+│   ├── utils
+│   │   └── env.dart
+│   └── widgets
+│       ├── custom_button_widget.dart
+│       └── input_widget.dart
+├── pubspec.lock
+├── pubspec.yaml
+├── silent-check-sso.html
+├── test
+│   └── widget_test.dart
+└── tree.txt
+
+20 directories, 20 files

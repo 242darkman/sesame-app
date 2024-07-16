@@ -13,11 +13,11 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.6
-  keycloak_flutter: ^0.0.21
   go_router: ^14.2.1
   get: ^4.6.6
   http: ^1.2.1
   shared_preferences: ^2.2.3
+  keycloak_wrapper: ^1.2.2
 
 dev_dependencies:
   flutter_test:
