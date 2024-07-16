@@ -1,21 +1,99 @@
-import 'package:client_app/screens/auth/auth_screen.dart';
+import 'package:client_app/utils/env.dart';
+import 'package:client_app/utils/get_bundle_identifier.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 
-void main() {
+final keycloakWrapper = KeycloakWrapper();
+final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize the plugin at the start of your app.
+  await keycloakWrapper.initialize();
+  // Listen to the errors caught by the plugin.
+  keycloakWrapper.onError = (e, s) {
+    // Display the error message inside a snackbar.
+    scaffoldMessengerKey.currentState
+      ?..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text('$e')));
+  };
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return const GetMaterialApp(
-      title: 'Sesame',
-      debugShowCheckedModeBanner: false,
-      home: AuthScreen(),
+  Widget build(BuildContext context) => MaterialApp(
+        scaffoldMessengerKey: scaffoldMessengerKey,
+        // Listen to the user authentication stream.
+        home: StreamBuilder<bool>(
+          initialData: false,
+          stream: keycloakWrapper.authenticationStream,
+          builder: (context, snapshot) =>
+              snapshot.data! ? const HomeScreen() : const LoginScreen(),
+        ),
+      );
+}
+
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
+
+  // Login using the given configuration.
+  Future<bool> login() async {
+    final bundleIdentifier = getBundleIdentifier();
+    final config = KeycloakConfig(
+      bundleIdentifier: bundleIdentifier,
+      clientId: Environment.KEYCLOAK_CLIENT_ID,
+      frontendUrl: Environment.KEYCLOAK_URL,
+      realm: Environment.KEYCLOAK_REALM,
     );
+
+    // Check if user has successfully logged in.
+    final isLoggedIn = await keycloakWrapper.login(config);
+    print('Logged in: $isLoggedIn');
+
+    return isLoggedIn;
   }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child:
+              TextButton(onPressed: login, child: const Text('Se connecter')),
+        ),
+      );
+}
+
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  // Logout from the current realm.
+  Future<bool> logout() async {
+    // Check if user has successfully logged out.
+    final isLoggedOut = await keycloakWrapper.logout();
+
+    return isLoggedOut;
+  }
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: Column(
+            children: [
+              FutureBuilder(
+                // Retrieve the user information.
+                future: keycloakWrapper.getUserInfo(),
+                builder: (context, snapshot) {
+                  final name = snapshot.data?['name'] as String;
+                  final email = snapshot.data?['email'] as String;
+
+                  return Text('$name\n$email\n\n');
+                },
+              ),
+              TextButton(onPressed: logout, child: const Text('Logout')),
+            ],
+          ),
+        ),
+      );
 }
