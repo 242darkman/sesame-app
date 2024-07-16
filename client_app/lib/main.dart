@@ -1,8 +1,10 @@
+import 'package:client_app/provider/user_provider.dart';
 import 'package:client_app/screens/home_screen.dart';
 import 'package:client_app/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 final keycloakWrapper = KeycloakWrapper();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
@@ -34,15 +36,19 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        debugShowCheckedModeBanner: false,
-        // Listen to the user authentication stream.
-        home: StreamBuilder<bool>(
-          initialData: false,
-          stream: keycloakWrapper.authenticationStream,
-          builder: (context, snapshot) =>
-              snapshot.data! ? const HomeScreen() : const LoginScreen(),
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+        ],
+        child: MaterialApp(
+          scaffoldMessengerKey: scaffoldMessengerKey,
+          debugShowCheckedModeBanner: false,
+          home: StreamBuilder<bool>(
+            initialData: false,
+            stream: keycloakWrapper.authenticationStream,
+            builder: (context, snapshot) =>
+                snapshot.data! ? const HomeScreen() : const LoginScreen(),
+          ),
         ),
       );
 }
