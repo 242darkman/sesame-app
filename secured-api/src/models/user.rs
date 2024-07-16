@@ -44,3 +44,18 @@ pub struct NewUser {
     pub email: String,
     pub keycloak_uuid: Uuid,
 }
+
+pub struct CreateUser {
+    pub firstname: String,
+    pub lastname: String,
+    pub email: String,
+    pub keycloak_uuid: Uuid,
+}
+
+pub struct ModifyUser {
+    pub id: Uuid,
+    pub firstname: String,
+    pub lastname: String,
+    pub email: String,
+    pub keycloak_uuid: Uuid,
+}
