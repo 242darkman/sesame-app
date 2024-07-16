@@ -3,7 +3,7 @@ use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
-use self::routes::user_routes::init_user_routes;
+use self::web_socket_logic::web_socket::ws_handler;
 
 mod controllers;
 mod models;
@@ -53,11 +53,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(state.clone()))
-            .service(
-                web::scope("/api/v1")
-                    .wrap(keycloak_auth)
-                    .configure(init_user_routes),
-            )
+            .service(web::scope("/api/v1").wrap(keycloak_auth))
+            .route("/ws/{user_id}", web::get().to(ws_handler))
     })
     .bind(("0.0.0.0", 8080))?
     .run()
