@@ -43,38 +43,65 @@ class _CustomButtonState extends State<CustomButton>
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Theme.of(context).platform == TargetPlatform.iOS;
+
     return GestureDetector(
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
-      child: Transform.scale(
-        scale: _animation.value,
-        child: Container(
-          width: 180,
-          height: 50,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20),
-            gradient: LinearGradient(
-              colors: [Colors.blue.shade300, Colors.blue.shade800],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.blue.withOpacity(0.3),
-                offset: const Offset(0, 5),
-                blurRadius: 10,
-              ),
-            ],
+      child: isIOS ? _buildCupertinoButton() : _buildMaterialButton(),
+    );
+  }
+
+  Widget _buildMaterialButton() {
+    return Container(
+      width: 180,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF30959B),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            offset: const Offset(0, 5),
+            blurRadius: 10,
           ),
-          child: Center(
-            child: Text(
-              widget.title,
-              style: const TextStyle(
-                fontSize: 24,
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          widget.title,
+          style: const TextStyle(
+            fontSize: 24,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCupertinoButton() {
+    return Container(
+      width: 180,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: const Color(0xFF30959B),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.blue.withOpacity(0.3),
+            offset: const Offset(0, 5),
+            blurRadius: 10,
+          ),
+        ],
+      ),
+      child: Center(
+        child: Text(
+          widget.title,
+          style: const TextStyle(
+            fontSize: 20,
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
           ),
         ),
       ),
