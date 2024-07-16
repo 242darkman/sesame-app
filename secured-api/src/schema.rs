@@ -1,9 +1,9 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    emplacement (id) {
+    defaults (id) {
         id -> Uuid,
-        emplacementname -> Varchar,
+        defaulttype -> Varchar,
     }
 }
 
@@ -14,13 +14,15 @@ diesel::table! {
         interventionstatus -> Varchar,
         idtoilet -> Nullable<Uuid>,
         iduser -> Nullable<Uuid>,
+        iddefault -> Nullable<Uuid>,
+        description -> Varchar,
     }
 }
 
 diesel::table! {
     level (id) {
         id -> Uuid,
-        idemplacement -> Nullable<Uuid>,
+        name -> Varchar,
     }
 }
 
@@ -29,6 +31,7 @@ diesel::table! {
         id -> Uuid,
         toiletstatus -> Varchar,
         idzone -> Nullable<Uuid>,
+        idlevel -> Nullable<Uuid>,
     }
 }
 
@@ -47,19 +50,18 @@ diesel::table! {
 diesel::table! {
     zone (id) {
         id -> Uuid,
-        zonename -> Varchar,
-        idlevel -> Nullable<Uuid>,
+        name -> Varchar,
     }
 }
 
+diesel::joinable!(intervention -> defaults (iddefault));
 diesel::joinable!(intervention -> toilet (idtoilet));
 diesel::joinable!(intervention -> users (iduser));
-diesel::joinable!(level -> emplacement (idemplacement));
+diesel::joinable!(toilet -> level (idlevel));
 diesel::joinable!(toilet -> zone (idzone));
-diesel::joinable!(zone -> level (idlevel));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    emplacement,
+    defaults,
     intervention,
     level,
     toilet,

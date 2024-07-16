@@ -1,4 +1,3 @@
-use crate::schema::users;
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -26,9 +25,8 @@ pub struct User {
     /// Date et heure de création du compte utilisateur.
     pub created_at: NaiveDateTime,
     /// Date et heure de la dernière mise à jour du compte utilisateur.
-    pub updated_at: Option<NaiveDateTime>,
+    pub updated_at: NaiveDateTime,
 }
-
 #[derive(AsChangeset)]
 #[diesel(table_name = crate::schema::users)]
 pub struct UserChangeset {
@@ -38,7 +36,6 @@ pub struct UserChangeset {
     pub email: Option<String>,
     pub keycloak_uuid: Option<Uuid>,
 }
-
 #[derive(Insertable)]
 #[diesel(table_name = crate::schema::users)]
 pub struct NewUser {

@@ -3,5 +3,7 @@ CREATE TABLE intervention (
     dateIntervention TIMESTAMP NOT NULL,
     interventionStatus VARCHAR NOT NULL,
     idToilet UUID REFERENCES toilet(id),
-    idUser UUID REFERENCES users(id)
+    idUser UUID REFERENCES users(id),
+    idDefault UUID REFERENCES defaults(id),
+    description VARCHAR NOT NULL
 );
