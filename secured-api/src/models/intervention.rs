@@ -17,6 +17,8 @@ pub struct Intervention {
     pub iddefault: Option<Uuid>,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::intervention)]
 pub struct NewIntervention {
     pub dateintervention: NaiveDateTime,
     pub interventionstatus: String,

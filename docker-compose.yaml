@@ -62,7 +62,7 @@ services:
       - ./secured-api:/app
       - /app/target
     ports:
-      - "8000:8000"
+      - "8000:8080"
     env_file:
       - ./secured-api/.env
     depends_on:

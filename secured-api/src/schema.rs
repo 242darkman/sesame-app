@@ -27,6 +27,13 @@ diesel::table! {
 }
 
 diesel::table! {
+    locations (id) {
+        id -> Uuid,
+        name -> Varchar,
+    }
+}
+
+diesel::table! {
     toilet (id) {
         id -> Uuid,
         toiletstatus -> Varchar,
@@ -64,6 +71,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     defaults,
     intervention,
     level,
+    locations,
     toilet,
     users,
     zone,
