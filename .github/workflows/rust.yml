@@ -16,7 +16,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
     - name: Build
       run: cargo build --verbose
+      working-directory: ./sesame/secured-api
     - name: Run tests
       run: cargo test --verbose
+      working-directory: ./sesame/secured-api
