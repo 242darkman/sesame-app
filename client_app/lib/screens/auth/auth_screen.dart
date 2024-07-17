@@ -4,6 +4,8 @@ import 'package:client_app/controllers/login_controller.dart';
 import 'package:client_app/controllers/register_controller.dart';
 import 'package:client_app/widgets/custom_button_widget.dart';
 import 'package:client_app/widgets/input_widget.dart';
+import 'package:client_app/screens/personnel/ticket_detail.dart';
+import 'package:client_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,12 +17,11 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  RegisterationController registerationController =
+  final RegisterationController registerationController =
       Get.put(RegisterationController());
+  final LoginController loginController = Get.put(LoginController());
+  var isLogin = true.obs;
 
-  LoginController loginController = Get.put(LoginController());
-
-  var isLogin = false.obs;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,66 +31,70 @@ class _AuthScreenState extends State<AuthScreen> {
           child: Center(
             child: Obx(
               () => Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      height: 30,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(height: 30),
+                  Container(
+                    child: Image.asset(
+                      'assets/images/Logo.jpg',
+                      width: 300,
+                      height: 100,
+                      fit: BoxFit.cover,
                     ),
-                    Container(
-                      child: Text(
-                        'Challenge stack',
-                        style: TextStyle(
-                            fontSize: 30,
-                            color: Colors.black,
-                            fontWeight: FontWeight.w400),
-                      ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(5),
                     ),
-                    SizedBox(
-                      height: 20,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    padding: EdgeInsets.all(16),
+                    child: Column(
                       children: [
-                        MaterialButton(
-                          color: !isLogin.value
-                              ? Colors.white
-                              : Colors.blue.shade800,
-                          onPressed: () {
-                            isLogin.value = false;
-                          },
-                          child: Text(
-                            'Inscription',
-                            style: TextStyle(
-                              color:
-                                  !isLogin.value ? Colors.black : Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        Text(
+                          isLogin.value ? 'Connexion' : 'Inscription',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        MaterialButton(
-                          color: isLogin.value
-                              ? Colors.white
-                              : Colors.blue.shade800,
-                          onPressed: () {
-                            isLogin.value = true;
-                          },
-                          child: Text(
-                            'Connexion',
-                            style: TextStyle(
-                              color:
-                                  isLogin.value ? Colors.black : Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
+                        SizedBox(height: 20),
+                        isLogin.value ? loginWidget() : registerWidget(),
                       ],
                     ),
-                    SizedBox(
-                      height: 80,
+                  ),
+                  SizedBox(height: 20),
+                  CustomButton(
+                    onPressed: () => isLogin.value
+                        ? loginController.loginWithEmail()
+                        : registerationController.registerWithEmail(),
+                    title: isLogin.value ? 'Se connecter' : 'S\'inscrire',
+                  ),
+                  SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () {
+                      isLogin.value = !isLogin.value;
+                    },
+                    child: Text(
+                      isLogin.value
+                          ? 'Pas de compte? S\'inscrire'
+                          : 'Déjà un compte? Se connecter',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        decoration: TextDecoration.underline,
+                      ),
                     ),
-                    isLogin.value ? loginWidget() : registerWidget()
-                  ]),
+                  ),
+                  SizedBox(height: 20),
+                  CustomButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, '/ticket_detail');
+                    },
+                    title: 'Voir les détails du ticket',
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -100,23 +105,12 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget registerWidget() {
     return Column(
       children: [
-        InputTextFieldWidget(registerationController.nameController, 'name'),
-        SizedBox(
-          height: 20,
-        ),
+        InputTextFieldWidget(registerationController.nameController, 'Nom'),
+        SizedBox(height: 20),
         InputTextFieldWidget(registerationController.emailController, 'Email'),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20),
         InputTextFieldWidget(
             registerationController.passwordController, 'Mot de passe'),
-        SizedBox(
-          height: 20,
-        ),
-        CustomButton(
-          onPressed: () => registerationController.registerWithEmail(),
-          title: 'S\'inscrire',
-        )
       ],
     );
   }
@@ -124,22 +118,10 @@ class _AuthScreenState extends State<AuthScreen> {
   Widget loginWidget() {
     return Column(
       children: [
-        SizedBox(
-          height: 20,
-        ),
         InputTextFieldWidget(loginController.emailController, 'Email'),
-        SizedBox(
-          height: 20,
-        ),
+        SizedBox(height: 20),
         InputTextFieldWidget(
             loginController.passwordController, 'Mot de passe'),
-        SizedBox(
-          height: 20,
-        ),
-        CustomButton(
-          onPressed: () => loginController.loginWithEmail(),
-          title: 'Se connecter',
-        )
       ],
     );
   }
