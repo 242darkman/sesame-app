@@ -24,8 +24,7 @@ class CustomMenu extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const ScannerScreen()),
+                  MaterialPageRoute(builder: (context) => ScannerScreen()),
                 );
               },
             ),
