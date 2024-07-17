@@ -11,6 +11,14 @@ pub struct Defaults {
     pub defaulttype: String,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::defaults)]
 pub struct NewDefaults {
+    pub defaulttype: String,
+}
+
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::defaults)]
+pub struct UpdateDefault {
     pub defaulttype: String,
 }

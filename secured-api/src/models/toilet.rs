@@ -10,11 +10,18 @@ pub struct Toilet {
     pub id: Uuid,
     pub toiletstatus: String,
     pub idzone: Option<Uuid>,
-    pub idlevel: Option<Uuid>,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::toilet)]
 pub struct NewToilet {
     pub toiletstatus: String,
     pub idzone: Uuid,
-    pub idlevel: Uuid,
+}
+
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::toilet)]
+pub struct UpdateToilet {
+    pub toiletstatus: String,
+    pub idzone: Uuid,
 }
