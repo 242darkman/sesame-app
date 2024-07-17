@@ -22,13 +22,16 @@ class _ScannerScreenState extends State<ScannerScreen> {
     return Scaffold(
       appBar: const CustomAppBar(title: 'Scanner'),
       bottomNavigationBar: const CustomMenu(),
-      body: ScannerWidget(
-        title: "Scannez le QR Code pour interagir avec la porte",
-        subTitle: "Scanner",
-        sizeTitle: 18,
-        colorScanner: const Color(0xFF30959B),
-        onCircleTap: _onCircleTap,
-        isPressed: _isPressed,
+      body: Container(
+        color: Colors.white, // Arrière-plan blanc
+        child: ScannerWidget(
+          title: "Scannez le QR Code pour interagir avec la porte",
+          subTitle: "Scanner",
+          sizeTitle: 18,
+          colorScanner: const Color(0xFF30959B),
+          onCircleTap: _onCircleTap,
+          isPressed: _isPressed,
+        ),
       ),
     );
   }

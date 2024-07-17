@@ -34,11 +34,11 @@ GoRouter createRouter(bool isAuthenticated) {
       ),
       GoRoute(
         path: '/app/scanner/report_problem/describe',
-        builder: (context, state) => const DescribeProblemScreen(),
+        builder: (context, state) => const ProblemScreen(),
       ),
       GoRoute(
         path: '/app/scanner/report_problem/describe_without_scan',
-        builder: (context, state) => const DescribeWithoutScanScreen(),
+        builder: (context, state) => const ProblemWithoutScanScreen(),
       ),
       GoRoute(
         path: '/app/scanner/reports',
