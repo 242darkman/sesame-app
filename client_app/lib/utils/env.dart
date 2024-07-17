@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 class Environment {
   static const String API_URL = 'http://localhost:8080/';
   static const String KEYCLOAK_URL = 'http://localhost:8081/';

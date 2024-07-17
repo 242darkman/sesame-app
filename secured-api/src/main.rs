@@ -1,9 +1,10 @@
+use actix::prelude::*;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
-use self::web_socket_logic::web_socket::ws_handler;
+use web_socket_logic::web_socket::{ws_handler, NotificationServer};
 
 mod controllers;
 mod models;
@@ -30,6 +31,9 @@ async fn main() -> std::io::Result<()> {
     let keycloak_pk =
         format!("-----BEGIN PUBLIC KEY-----\n{keycloak_pk}\n-----END PUBLIC KEY-----");
 
+    // Initialize the notification server
+    let notification_server = NotificationServer::new().start();
+
     println!("Backend launched!");
 
     // Set up and run the HTTP server
@@ -53,6 +57,7 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(state.clone()))
+            .app_data(web::Data::new(notification_server.clone()))
             .service(web::scope("/api/v1").wrap(keycloak_auth))
             .route("/ws/{user_id}", web::get().to(ws_handler))
     })

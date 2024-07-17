@@ -30,7 +30,6 @@ void main() async {
   };
 
   final webSocketService = WebSocketService();
-  await webSocketService.connect();
 
   const storage = FlutterSecureStorage();
   UserProvider userProvider = UserProvider();
@@ -41,11 +40,15 @@ void main() async {
     final user = await keycloakWrapper.getUserInfo();
     userProvider.setUserInfo(
         accessToken: keycloakWrapper.accessToken, user: user);
+    final userId = user!['sub'];
+    await webSocketService.connect(userId);
   } else {
     final token = await storage.read(key: "keycloak_token");
     if (token != null && !JwtDecoder.isExpired(token)) {
       final user = await keycloakWrapper.getUserInfo();
       userProvider.setUserInfo(accessToken: token, user: user);
+      final userId = user!['sub'];
+      await webSocketService.connect(userId);
     }
   }
 
