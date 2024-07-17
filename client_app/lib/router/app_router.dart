@@ -26,7 +26,7 @@ GoRouter createRouter(bool isAuthenticated) {
       ),
       GoRoute(
         path: '/app/scanner',
-        builder: (context, state) => const ScannerScreen(),
+        builder: (context, state) => ScannerScreen(),
       ),
       GoRoute(
         path: '/app/door',
