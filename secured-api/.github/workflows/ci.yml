@@ -1,44 +1,42 @@
-name: Rust Cache Test
+name: CI/CD Pipeline
 
+# Déclenche ce workflow sur les pull requests vers la branche main afin qu'elle ne contienne que des commits de merge (de PR)
 on:
-  push:
-    branches:
-      - main
   pull_request:
     branches:
       - main
+  push:
+    branches: 
+      - main # ajout d'un job pour le déploiement continu sur la branche principale lorsque les changements seront fusionnés
 
+# Définition du job de build pour la pull request
 jobs:
-  cache-test:
-
+  build:
+    # Utilisation de la dernière version d'Ubuntu comme environnement d'exécution
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    # Checkout du code du dépôt
+    - uses: actions/checkout@v2
 
-    - name: Set up Rust
+    # Installation de Rust avec rustup
+    - name: Install Rust
       uses: actions-rs/toolchain@v1
       with:
         toolchain: stable
-        profile: minimal
-        override: true
 
-    - name: Cache cargo registry
-      uses: actions/cache@v2
-      with:
-        path: ~/.cargo/registry
-        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-registry-
+    # Installation des dépendances du projet (s'il y a des dépendances spécifiques)
+    - name: Install dependencies
+      run: cargo fetch
 
-    - name: Cache cargo index
-      uses: actions/cache@v2
-      with:
-        path: ~/.cargo/git
-        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-cargo-index-
+    # Exécution du linter pour vérifier le respect des conventions de code
+    - name: Run Linter
+      run: cargo clippy -- -D warnings
 
-    - name: Verify cache
-      run: echo "Cache steps executed successfully."
+    # Exécution des tests pour s'assurer que le code fonctionne comme prévu
+    - name: Run tests
+      run: cargo test
+
+    # Construction du projet, préparation pour le déploiement ou la livraison
+    - name: Build
+      run: cargo build --release
