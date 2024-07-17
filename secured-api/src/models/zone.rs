@@ -11,6 +11,8 @@ pub struct Zone {
     pub name: String,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::zone)]
 pub struct NewZone {
     pub name: String,
 }

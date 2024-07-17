@@ -1,9 +1,10 @@
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
-use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
+//use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
+use services::location_service::{create_location, update_location};
+//use self::web_socket_logic::web_socket::ws_handler;
 
-use self::web_socket_logic::web_socket::ws_handler;
 
 mod controllers;
 mod models;
@@ -25,12 +26,12 @@ async fn main() -> std::io::Result<()> {
     let state = AppState { conn: pool };
 
     // Fetch the Keycloak public key from environment variables
-    let keycloak_pk =
+    /* let keycloak_pk =
         std::env::var("KEYCLOAK_PUBLIC_KEY").expect("KEYCLOAK_PUBLIC_KEY not found in .env file");
     let keycloak_pk =
         format!("-----BEGIN PUBLIC KEY-----\n{keycloak_pk}\n-----END PUBLIC KEY-----");
 
-    println!("Backend launched!");
+    println!("Backend launched!"); */
 
     // Set up and run the HTTP server
     HttpServer::new(move || {
@@ -42,19 +43,23 @@ async fn main() -> std::io::Result<()> {
             .max_age(3600);
 
         // Configure Keycloak authentication middleware
-        let keycloak_auth = KeycloakAuth {
+        /* let keycloak_auth = KeycloakAuth {
             detailed_responses: true,
             passthrough_policy: AlwaysReturnPolicy,
             keycloak_oid_public_key: DecodingKey::from_rsa_pem(keycloak_pk.as_bytes()).unwrap(),
             required_roles: vec![],
-        };
+        }; */
 
         // Set up the Actix-web application
         App::new()
             .wrap(cors)
             .app_data(web::Data::new(state.clone()))
-            .service(web::scope("/api/v1").wrap(keycloak_auth))
-            .route("/ws/{user_id}", web::get().to(ws_handler))
+            .service(
+                web::scope("/locations")
+                    .route("", web::post().to(create_location))
+                    .route("/{id}", web::put().to(update_location))
+            )
+
     })
     .bind(("0.0.0.0", 8080))?
     .run()
