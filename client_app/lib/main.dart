@@ -1,6 +1,5 @@
 import 'package:client_app/provider/user_provider.dart';
-import 'package:client_app/screens/home_screen.dart';
-import 'package:client_app/screens/login/login_screen.dart';
+import 'package:client_app/router/app_router.dart';
 import 'package:flutter/material.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 import 'package:logger/logger.dart';
@@ -12,15 +11,12 @@ final logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize the plugin at the start of your app.
   await keycloakWrapper.initialize();
-  // Listen to the errors caught by the plugin.
   keycloakWrapper.onError = (e, s) {
     final errorMessage = e.toString();
     if (errorMessage.contains("User cancelled login")) {
       logger.i("Login annulé par l'utilisateur.");
     } else if (errorMessage.contains("org.openid.appauth.general error -3")) {
-      // Ignore this specific error and log it instead of showing a snackbar
       logger.w("Authorization failed with error -3: $e");
     } else {
       logger.e(e);
@@ -40,15 +36,21 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_) => UserProvider()),
         ],
-        child: MaterialApp(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          debugShowCheckedModeBanner: false,
-          home: StreamBuilder<bool>(
-            initialData: false,
-            stream: keycloakWrapper.authenticationStream,
-            builder: (context, snapshot) =>
-                snapshot.data! ? const HomeScreen() : const LoginScreen(),
-          ),
+        child: StreamBuilder<bool>(
+          initialData: false,
+          stream: keycloakWrapper.authenticationStream,
+          builder: (context, snapshot) {
+            final isAuthenticated = snapshot.data ?? false;
+            final router = createRouter(isAuthenticated);
+
+            return MaterialApp.router(
+              scaffoldMessengerKey: scaffoldMessengerKey,
+              debugShowCheckedModeBanner: false,
+              routerDelegate: router.routerDelegate,
+              routeInformationParser: router.routeInformationParser,
+              routeInformationProvider: router.routeInformationProvider,
+            );
+          },
         ),
       );
 }
