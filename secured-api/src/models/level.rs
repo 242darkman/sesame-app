@@ -11,6 +11,8 @@ pub struct Level {
     pub name: String,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::level)]
 pub struct NewLevel {
     pub name: String,
 }

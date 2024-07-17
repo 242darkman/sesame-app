@@ -12,6 +12,8 @@ pub struct Zone {
     pub idzone: Option<Uuid>,
 }
 
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::toilet)]
 pub struct NewToilet {
     pub toiletstatus: String,
     pub idzone: Uuid,
