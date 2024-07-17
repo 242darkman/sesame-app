@@ -13,6 +13,8 @@ pub struct Intervention {
     pub interventionstatus: String,
     pub idtoilet: Option<Uuid>,
     pub iduser: Option<Uuid>,
+    pub description: String,
+    pub iddefault: Option<Uuid>,
 }
 
 pub struct NewIntervention {
@@ -20,4 +22,6 @@ pub struct NewIntervention {
     pub interventionstatus: String,
     pub idtoilet: Uuid,
     pub iduser: Uuid,
+    pub description: String,
+    pub iddefault: Uuid,
 }
