@@ -34,6 +34,15 @@ async fn main() -> std::io::Result<()> {
     // Initialize the notification server
     let notification_server = NotificationServer::new().start();
 
+    let sentry_dsn = std::env::var("SENTRY_DSN").expect("SENTRY_DSN not found in .env file");
+    let _guard = sentry::init((
+        sentry_dsn,
+        sentry::ClientOptions {
+            release: sentry::release_name!(),
+            ..Default::default()
+        },
+    ));
+
     println!("Backend launched!");
 
     // Set up and run the HTTP server

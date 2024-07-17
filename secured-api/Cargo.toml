@@ -21,3 +21,4 @@ actix-web-actors = "4.3.0"
 reqwest = "0.12.5"
 async-std = { version = "1.12.0", features = ["attributes", "tokio1"] }
 actix = "0.13.5"
+sentry = "0.34.0"
