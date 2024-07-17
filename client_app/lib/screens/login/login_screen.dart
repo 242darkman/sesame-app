@@ -34,8 +34,7 @@ class LoginScreen extends StatelessWidget {
       final userProvider = Provider.of<UserProvider>(context, listen: false);
       userProvider.setUserInfo(
         accessToken: keycloakWrapper.accessToken!,
-        user: await keycloakWrapper.getUserInfo() ??
-            {}, // Replace with the appropriate method to get the user ID
+        user: await keycloakWrapper.getUserInfo() ?? {},
       );
     }
 
@@ -65,10 +64,14 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             Center(
-              // Centre le bouton horizontalement et verticalement
-              child: CustomButton(
-                onPressed: () => login(context),
-                title: 'Se connecter',
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    bottom:
+                        100.0), // Adjust the bottom padding to move the button up
+                child: CustomButton(
+                  onPressed: () => login(context),
+                  title: 'Se connecter',
+                ),
               ),
             ),
           ],

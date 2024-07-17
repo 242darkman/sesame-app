@@ -6,6 +6,7 @@ import 'package:client_app/screens/scanner/report_comment_screen.dart';
 import 'package:client_app/screens/scanner/report_details_screen.dart';
 import 'package:client_app/screens/scanner/reports_screen.dart';
 import 'package:client_app/screens/scanner/scanner_screen.dart';
+import 'package:client_app/screens/user/profile_screen.dart';
 import 'package:go_router/go_router.dart';
 
 GoRouter createRouter(bool isAuthenticated) {
@@ -51,6 +52,10 @@ GoRouter createRouter(bool isAuthenticated) {
       GoRoute(
         path: '/app/scanner/report_comment',
         builder: (context, state) => const ReportCommentScreen(),
+      ),
+      GoRoute(
+        path: '/app/scanner/settings',
+        builder: (context, state) => const ProfileScreen(),
       ),
     ],
   );

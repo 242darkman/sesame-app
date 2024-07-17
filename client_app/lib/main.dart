@@ -2,6 +2,8 @@ import 'package:client_app/provider/user_provider.dart';
 import 'package:client_app/router/app_router.dart';
 import 'package:client_app/services/websocket_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
 import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
@@ -30,18 +32,46 @@ void main() async {
   final webSocketService = WebSocketService();
   await webSocketService.connect();
 
-  runApp(MyApp(webSocketService: webSocketService));
+  const storage = FlutterSecureStorage();
+  UserProvider userProvider = UserProvider();
+
+  if (keycloakWrapper.accessToken != null) {
+    await storage.write(
+        key: "keycloak_token", value: keycloakWrapper.accessToken!);
+    final user = await keycloakWrapper.getUserInfo();
+    userProvider.setUserInfo(
+        accessToken: keycloakWrapper.accessToken, user: user);
+  } else {
+    final token = await storage.read(key: "keycloak_token");
+    if (token != null && !JwtDecoder.isExpired(token)) {
+      final user = await keycloakWrapper.getUserInfo();
+      userProvider.setUserInfo(accessToken: token, user: user);
+    }
+  }
+
+  final token = await storage.read(key: "keycloak_token");
+  logger.i("token $token");
+
+  logger.i("user ${await keycloakWrapper.getUserInfo()}");
+
+  /*if (token?.isEmpty || (token != null && JwtDecoder.isExpired(token))) {
+    await storage.delete(key: "keycloak_token");
+  }*/
+
+  runApp(MyApp(webSocketService: webSocketService, userProvider: userProvider));
 }
 
 class MyApp extends StatelessWidget {
   final WebSocketService webSocketService;
+  final UserProvider userProvider;
 
-  const MyApp({super.key, required this.webSocketService});
+  const MyApp(
+      {super.key, required this.webSocketService, required this.userProvider});
 
   @override
   Widget build(BuildContext context) => MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => userProvider),
           ChangeNotifierProvider(create: (_) => webSocketService),
         ],
         child: StreamBuilder<bool>(
