@@ -24,7 +24,7 @@ jobs:
         override: true
     - name: Build
       run: cargo build --verbose
-      working-directory: sesame-app/secured-api
+      working-directory: ./secured-api
     - name: Run tests
       run: cargo test --verbose
-      working-directory: sesame-app/secured-api
+      working-directory: ./secured-api
