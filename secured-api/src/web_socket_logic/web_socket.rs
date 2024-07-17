@@ -62,9 +62,11 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsSession {
             Ok(ws::Message::Ping(msg)) => {
                 self.hb = Instant::now();
                 ctx.pong(&msg);
+                println!("Received Ping");
             }
             Ok(ws::Message::Pong(_)) => {
                 self.hb = Instant::now();
+                println!("Received Pong");
             }
             Ok(ws::Message::Text(text)) => {
                 println!("Received message: {}", text);
@@ -74,7 +76,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsSession {
                     println!("2 seconds have passed since the first message was received.");
                 });
             }
-            _ => (),
+            _ => {
+                println!("Received other type of message or an error occurred.");
+            }
         }
     }
 }
