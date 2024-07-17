@@ -1,15 +1,18 @@
 import 'package:client_app/main.dart';
+import 'package:client_app/provider/user_provider.dart';
 import 'package:client_app/utils/env.dart';
 import 'package:client_app/utils/get_bundle_identifier.dart';
 import 'package:client_app/widgets/custom_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   // Login using the given configuration.
-  Future<bool> login() async {
+  Future<bool> login(BuildContext context) async {
     final bundleIdentifier = getBundleIdentifier();
     final config = KeycloakConfig(
       bundleIdentifier: bundleIdentifier,
@@ -20,6 +23,21 @@ class LoginScreen extends StatelessWidget {
 
     // Check if user has successfully logged in.
     final isLoggedIn = await keycloakWrapper.login(config);
+    if (isLoggedIn) {
+      logger.i("Utilisateur connecté avec succès.");
+      logger.i("Access token: ${keycloakWrapper.accessToken}");
+      const storage = FlutterSecureStorage();
+      await storage.write(
+          key: "keycloak_token", value: keycloakWrapper.accessToken);
+
+      // Stockez les informations de l'utilisateur dans le UserProvider
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      userProvider.setUserInfo(
+        accessToken: keycloakWrapper.accessToken!,
+        user: await keycloakWrapper.getUserInfo() ??
+            {}, // Replace with the appropriate method to get the user ID
+      );
+    }
 
     return isLoggedIn;
   }
@@ -49,7 +67,7 @@ class LoginScreen extends StatelessWidget {
             Center(
               // Centre le bouton horizontalement et verticalement
               child: CustomButton(
-                onPressed: login,
+                onPressed: () => login(context),
                 title: 'Se connecter',
               ),
             ),

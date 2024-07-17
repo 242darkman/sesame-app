@@ -18,6 +18,10 @@ dependencies:
   http: ^1.2.1
   shared_preferences: ^2.2.3
   keycloak_wrapper: ^1.2.2
+  logger: ^2.4.0
+  flutter_secure_storage: ^9.2.2
+  provider: ^6.1.2
+  web_socket_channel: ^3.0.1
 
 dev_dependencies:
   flutter_test:

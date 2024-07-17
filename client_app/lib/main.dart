@@ -1,38 +1,64 @@
-import 'package:client_app/screens/home_screen.dart';
-import 'package:client_app/screens/login/login_screen.dart';
+import 'package:client_app/provider/user_provider.dart';
+import 'package:client_app/router/app_router.dart';
+import 'package:client_app/services/websocket_service.dart';
 import 'package:flutter/material.dart';
 import 'package:keycloak_wrapper/keycloak_wrapper.dart';
+import 'package:logger/logger.dart';
+import 'package:provider/provider.dart';
 
 final keycloakWrapper = KeycloakWrapper();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+final logger = Logger();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Initialize the plugin at the start of your app.
   await keycloakWrapper.initialize();
-  // Listen to the errors caught by the plugin.
   keycloakWrapper.onError = (e, s) {
-    // Display the error message inside a snackbar.
-    scaffoldMessengerKey.currentState
-      ?..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text('$e')));
+    final errorMessage = e.toString();
+    if (errorMessage.contains("User cancelled login")) {
+      logger.i("Login annulé par l'utilisateur.");
+    } else if (errorMessage.contains("org.openid.appauth.general error -3")) {
+      logger.w("Authorization failed with error -3: $e");
+    } else {
+      logger.e(e);
+      scaffoldMessengerKey.currentState
+        ?..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(content: Text('$e')));
+    }
   };
-  runApp(const MyApp());
+
+  final webSocketService = WebSocketService();
+  await webSocketService.connect();
+
+  runApp(MyApp(webSocketService: webSocketService));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final WebSocketService webSocketService;
+
+  const MyApp({super.key, required this.webSocketService});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        scaffoldMessengerKey: scaffoldMessengerKey,
-        debugShowCheckedModeBanner: false,
-        // Listen to the user authentication stream.
-        home: StreamBuilder<bool>(
+  Widget build(BuildContext context) => MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => UserProvider()),
+          ChangeNotifierProvider(create: (_) => webSocketService),
+        ],
+        child: StreamBuilder<bool>(
           initialData: false,
           stream: keycloakWrapper.authenticationStream,
-          builder: (context, snapshot) =>
-              snapshot.data! ? const HomeScreen() : const LoginScreen(),
+          builder: (context, snapshot) {
+            final isAuthenticated = snapshot.data ?? false;
+            final router = createRouter(isAuthenticated);
+
+            return MaterialApp.router(
+              scaffoldMessengerKey: scaffoldMessengerKey,
+              debugShowCheckedModeBanner: false,
+              routerDelegate: router.routerDelegate,
+              routeInformationParser: router.routeInformationParser,
+              routeInformationProvider: router.routeInformationProvider,
+            );
+          },
         ),
       );
 }
