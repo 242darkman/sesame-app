@@ -1,8 +1,8 @@
 // ignore_for_file: constant_identifier_names
 
 class Environment {
-  static const String API_URL = 'http://localhost:8080/';
-  static const String KEYCLOAK_URL = 'http://localhost:8081/';
+  static const String API_URL = 'http://172.20.10.4:8080/';
+  static const String KEYCLOAK_URL = 'http://172.20.10.4:8081';
   static const String KEYCLOAK_REALM = 'sesame';
   static const String KEYCLOAK_CLIENT_ID = 'sesame_client';
   static const String SENTRY_DSN =

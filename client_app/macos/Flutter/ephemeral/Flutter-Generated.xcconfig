@@ -1,6 +1,6 @@
 // This is a generated file; do not edit or check into version control.
-FLUTTER_ROOT=/Users/brandon/development/flutter
-FLUTTER_APPLICATION_PATH=/Users/brandon/Documents/sesame-app/client_app
+FLUTTER_ROOT=/opt/homebrew/Caskroom/flutter/3.19.2/flutter
+FLUTTER_APPLICATION_PATH=/Users/lansanakeita/Desktop/Challenge_rust_fluttter_devOps/sesame-app/client_app
 COCOAPODS_PARALLEL_CODE_SIGN=true
 FLUTTER_BUILD_DIR=build
 FLUTTER_BUILD_NAME=1.0.0

@@ -37,6 +37,7 @@ pub async fn create_location(
     }
 }
 
+
 /// Met à jour un emplacement existant
 ///
 /// # Arguments

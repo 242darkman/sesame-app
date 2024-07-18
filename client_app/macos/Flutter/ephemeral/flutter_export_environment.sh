@@ -1,7 +1,7 @@
 #!/bin/sh
 # This is a generated file; do not edit or check into version control.
-export "FLUTTER_ROOT=/Users/brandon/development/flutter"
-export "FLUTTER_APPLICATION_PATH=/Users/brandon/Documents/sesame-app/client_app"
+export "FLUTTER_ROOT=/opt/homebrew/Caskroom/flutter/3.19.2/flutter"
+export "FLUTTER_APPLICATION_PATH=/Users/lansanakeita/Desktop/Challenge_rust_fluttter_devOps/sesame-app/client_app"
 export "COCOAPODS_PARALLEL_CODE_SIGN=true"
 export "FLUTTER_BUILD_DIR=build"
 export "FLUTTER_BUILD_NAME=1.0.0"
