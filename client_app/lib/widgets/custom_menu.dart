@@ -39,6 +39,7 @@ class CustomMenu extends StatelessWidget {
               ),
               onPressed: () {
                 showCantScanTextNotifier.value = true;
+                context.go('/app/scanner');
               },
             ),
           ),

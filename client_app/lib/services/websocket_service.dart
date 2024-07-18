@@ -28,6 +28,10 @@ class WebSocketService with ChangeNotifier {
   /// Getter pour le dernier message.
   String? get message => _message;
 
+  /// Liste des emplacements reçus du WebSocket.
+  List<dynamic> _locations = [];
+  List<dynamic> get locations => _locations;
+
   /// Se connecte au serveur WebSocket en utilisant l'[userId] fourni.
   ///
   /// Récupère le jeton Keycloak depuis le stockage sécurisé et établit une
@@ -47,8 +51,15 @@ class WebSocketService with ChangeNotifier {
       _channel = IOWebSocketChannel.connect(Uri.parse(url), headers: headers);
 
       _channel!.stream.listen((message) {
-        _message = message;
-        notifyListeners();
+        final decodedMessage = jsonDecode(message);
+        if (decodedMessage is List) {
+          _locations = decodedMessage;
+          logger.i("Locations: $_locations");
+          notifyListeners();
+        } else {
+          _message = message;
+          notifyListeners();
+        }
         logger.i("Reçu: $message");
       }, onError: (error) {
         logger.e("Erreur: $error");
@@ -69,6 +80,13 @@ class WebSocketService with ChangeNotifier {
   /// Utilise le canal WebSocket pour envoyer le [message] fourni.
   void sendMessage(String message) {
     _channel?.sink.add(message);
+  }
+
+  /// Demande la liste des emplacements au serveur WebSocket.
+  ///
+  /// Envoie une requête pour obtenir les emplacements.
+  void requestLocations() {
+    _channel?.sink.add("REQUEST_LOCATIONS");
   }
 
   /// Se déconnecte du serveur WebSocket.
