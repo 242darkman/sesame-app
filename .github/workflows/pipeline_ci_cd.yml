@@ -12,24 +12,41 @@ env:
 jobs:
   build:
 
-    name: install dependencies
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@master
+    - uses: actions/checkout@v4
 
-    - name: clean stale build and cache
-      uses: ./action
+    # Rust setup et build
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
       with:
-        args: clean
+        toolchain: stable
+        profile: minimal
+        override: true
+    - name: Build Rust 
+      run: cargo build --verbose
+      working-directory: ./secured-api
+    - name: Run tests
+      run: cargo test --verbose
+      working-directory: ./secured-api
+    
+      # Flutter setup et build
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.22.2'
 
-    - name: install dependencies
-      uses: ./action
-      with:
-        args: pub get
-        working-directory: ./client_app
+    # Install dependencies
+    - name: Install dependencies
+      run: flutter pub get
+      working-directory: ./client_app
 
-    - name: build apk
-      uses: ./action
-      with:
-        args: build apk --release
-         working-directory: ./client_app
+    # Build the app
+    - name: Build the app
+      run: flutter build apk --debug
+      working-directory: ./client_app
+    # Run tests
+    - name: Run tests
+      run: flutter test
+      working-directory: ./client_app
