@@ -26,8 +26,10 @@ jobs:
       uses: ./action
       with:
         args: pub get
+        working-directory: ./client_app
 
     - name: build apk
       uses: ./action
       with:
         args: build apk --release
+         working-directory: ./client_app
