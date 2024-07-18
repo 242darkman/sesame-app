@@ -13,6 +13,8 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 final keycloakWrapper = KeycloakWrapper();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 final logger = Logger();
+final ValueNotifier<bool> showCantScanTextNotifier = ValueNotifier<bool>(false);
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

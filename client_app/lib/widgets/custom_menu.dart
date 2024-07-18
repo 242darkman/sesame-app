@@ -1,3 +1,4 @@
+import 'package:client_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,6 +24,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
+                showCantScanTextNotifier.value = false;
                 context.go('/app/scanner');
               },
             ),
@@ -36,7 +38,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
-                context.go('/app/scanner');
+                showCantScanTextNotifier.value = true;
               },
             ),
           ),
@@ -49,6 +51,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
+                showCantScanTextNotifier.value = true;
                 context.go('/app/scanner/settings');
               },
             ),
