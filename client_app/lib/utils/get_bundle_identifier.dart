@@ -7,7 +7,7 @@ String getBundleIdentifier() {
   if (Platform.isIOS) {
     bundleIdentifier = 'io.flutter.flutter.app';
   } else if (Platform.isAndroid) {
-    bundleIdentifier = 'com.client.app.android';
+    bundleIdentifier = 'com.example.client.app';
   }
 
   return bundleIdentifier;

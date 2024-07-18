@@ -1,4 +1,4 @@
-/* use actix::prelude::*;
+use actix::prelude::*;
 use actix_web::{web, HttpRequest, Responder};
 use actix_web_actors::ws;
 use serde::{Deserialize, Serialize};
@@ -62,19 +62,31 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsSession {
             Ok(ws::Message::Ping(msg)) => {
                 self.hb = Instant::now();
                 ctx.pong(&msg);
+                println!("Received Ping");
             }
             Ok(ws::Message::Pong(_)) => {
                 self.hb = Instant::now();
+                println!("Received Pong");
             }
             Ok(ws::Message::Text(text)) => {
                 println!("Received message: {}", text);
-                let msg: Notification = serde_json::from_str(&text).unwrap();
-                self.addr.do_send(msg);
-                ctx.run_later(Duration::new(2, 0), |_, _| {
-                    println!("2 seconds have passed since the first message was received.");
-                });
+                match serde_json::from_str::<Notification>(&text) {
+                    Ok(notification) => {
+                        self.addr.do_send(notification);
+                        ctx.run_later(Duration::new(2, 0), |_, _| {
+                            println!("2 seconds have passed since the first message was received.");
+                        });
+                    }
+                    Err(e) => {
+                        println!("Failed to deserialize message: {:?}", e);
+                        println!("Message content: {}", text);
+                        ctx.stop();
+                    }
+                }
             }
-            _ => (),
+            _ => {
+                println!("Received other type of message or an error occurred.");
+            }
         }
     }
 }
@@ -233,4 +245,3 @@ pub async fn ws_handler(
     println!("Starting WS for user {}", user_id);
     ws::start(ws, &req, stream)
 }
- */
