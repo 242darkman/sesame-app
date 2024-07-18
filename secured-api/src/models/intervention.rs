@@ -13,6 +13,8 @@ pub struct Intervention {
     pub interventionstatus: String,
     pub idtoilet: Option<Uuid>,
     pub iduser: Option<Uuid>,
+    pub iddefault: Option<Uuid>,
+    pub description: String,
 }
 
 #[derive(Insertable, Deserialize, Serialize)]
@@ -22,4 +24,13 @@ pub struct NewIntervention {
     pub interventionstatus: String,
     pub idtoilet: Uuid,
     pub iduser: Uuid,
+    pub description: String,
+    pub iddefault: Uuid,
+}
+
+#[derive(Insertable, Deserialize, Serialize)]
+#[diesel(table_name = crate::schema::intervention)]
+pub struct UpdateIntervention {
+    pub interventionstatus: String,
+    pub description: String,
 }

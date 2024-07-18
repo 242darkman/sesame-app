@@ -5,7 +5,6 @@ use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
 
-
 /**
  * Céatio
  */
@@ -33,9 +32,6 @@ pub async fn create_location(
         }
     }
 }
-
-
-
 pub async fn update_location(
     state: web::Data<AppState>,
     id_location: web::Path<String>,
@@ -45,20 +41,33 @@ pub async fn update_location(
         .conn
         .get()
         .expect("Failed to get a connection from the pool.");
-
     let location_uuid = match Uuid::parse_str(&id_location) {
         Ok(uuid) => uuid,
         Err(_) => return HttpResponse::BadRequest().body("Invalid UUID format."),
     };
 
     let target = locations.filter(id.eq(location_uuid));
-
     match diesel::update(target)
         .set(name.eq(&updated_location.name))
         .execute(&mut conn)
     {
         Ok(0) => HttpResponse::NotFound().body("Location not found."),
         Ok(_) => HttpResponse::Ok().body("Location updated successfully."),
-        Err(err) => HttpResponse::InternalServerError().body(format!("Failed to update location: {}", err)),
+        Err(err) => {
+            HttpResponse::InternalServerError().body(format!("Failed to update location: {}", err))
+        }
+    }
+}
+
+pub async fn get_locations(state: web::Data<AppState>) -> impl Responder {
+    let mut conn = state
+        .conn
+        .get()
+        .expect("Failed to get a connection from the pool.");
+
+    match locations.load::<Location>(&mut conn) {
+        Ok(all_locations) => HttpResponse::Ok().json(all_locations),
+        Err(err) => HttpResponse::InternalServerError()
+            .body(format!("Failed to retrieve locations: {}", err)),
     }
 }
