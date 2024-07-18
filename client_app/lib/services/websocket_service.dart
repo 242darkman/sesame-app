@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:client_app/utils/env.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -55,7 +57,8 @@ class WebSocketService with ChangeNotifier {
       });
 
       logger.i("Sending initial message to WebSocket.");
-      _channel!.sink.add("Bonjour depuis le client Flutter!");
+      _channel!.sink.add(jsonEncode(
+          {"user_id": userId, "message": "Bonjour depuis le client Flutter!"}));
     } else {
       logger.w("Aucun jeton Keycloak trouvé");
     }
