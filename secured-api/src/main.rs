@@ -31,6 +31,20 @@ async fn main() -> std::io::Result<()> {
     let keycloak_pk =
         format!("-----BEGIN PUBLIC KEY-----\n{keycloak_pk}\n-----END PUBLIC KEY-----");
 
+    // print the keycloak_pk
+    println!("Keycloak public key: {:?}", keycloak_pk);
+
+    let decoding_kc_public_key = match DecodingKey::from_rsa_pem(keycloak_pk.as_bytes()) {
+        Ok(key) => key,
+        Err(e) => {
+            eprintln!("Invalid Keycloak public key format: {:?}", e);
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::InvalidData,
+                "Invalid Keycloak public key format",
+            ));
+        }
+    };
+
     // Initialize the notification server
     let notification_server = NotificationServer::new().start();
 
@@ -58,7 +72,7 @@ async fn main() -> std::io::Result<()> {
         let keycloak_auth = KeycloakAuth {
             detailed_responses: true,
             passthrough_policy: AlwaysReturnPolicy,
-            keycloak_oid_public_key: DecodingKey::from_rsa_pem(keycloak_pk.as_bytes()).unwrap(),
+            keycloak_oid_public_key: decoding_kc_public_key.clone(),
             required_roles: vec![],
         };
 
@@ -67,8 +81,11 @@ async fn main() -> std::io::Result<()> {
             .wrap(cors)
             .app_data(web::Data::new(state.clone()))
             .app_data(web::Data::new(notification_server.clone()))
-            .service(web::scope("/api/v1").wrap(keycloak_auth))
-            .route("/ws/{user_id}", web::get().to(ws_handler))
+            .service(
+                web::scope("/api/v1")
+                    .wrap(keycloak_auth)
+                    .route("/ws/{user_id}", web::get().to(ws_handler)),
+            )
     })
     .bind(("0.0.0.0", 8080))?
     .run()

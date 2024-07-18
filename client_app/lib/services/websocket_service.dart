@@ -37,7 +37,9 @@ class WebSocketService with ChangeNotifier {
 
     if (token != null) {
       final url =
-          "ws://${Environment.API_URL.replaceFirst('http://', '')}ws/$userId";
+          "ws://${Environment.API_URL.replaceFirst('http://', '')}api/v1/ws/$userId";
+
+      logger.i("Connecting to WebSocket URL: $url");
 
       _channel = IOWebSocketChannel.connect(Uri.parse(url));
 
@@ -51,6 +53,7 @@ class WebSocketService with ChangeNotifier {
         logger.i("WebSocket fermé");
       });
 
+      logger.i("Sending initial message to WebSocket.");
       _channel!.sink.add("Bonjour depuis le client Flutter!");
     } else {
       logger.w("Aucun jeton Keycloak trouvé");
