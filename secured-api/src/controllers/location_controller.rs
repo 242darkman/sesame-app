@@ -1,6 +1,6 @@
 use crate::{
     models::location::{NewLocation, UpdateLocation},
-    services::location_service::{create_location, update_location},
+    services::location_service::{create_location, get_locations, update_location},
     AppState,
 };
 
@@ -20,4 +20,8 @@ pub async fn update_location_controller(
 ) -> impl Responder {
     // Appeler le service update_location et renvoyer la réponse
     update_location(state, id_location, updated_location).await
+}
+
+pub async fn get_locations_controller(state: web::Data<AppState>) -> impl Responder {
+    get_locations(state).await
 }

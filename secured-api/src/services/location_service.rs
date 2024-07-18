@@ -58,3 +58,16 @@ pub async fn update_location(
         }
     }
 }
+
+pub async fn get_locations(state: web::Data<AppState>) -> impl Responder {
+    let mut conn = state
+        .conn
+        .get()
+        .expect("Failed to get a connection from the pool.");
+
+    match locations.load::<Location>(&mut conn) {
+        Ok(all_locations) => HttpResponse::Ok().json(all_locations),
+        Err(err) => HttpResponse::InternalServerError()
+            .body(format!("Failed to retrieve locations: {}", err)),
+    }
+}

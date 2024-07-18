@@ -1,6 +1,6 @@
 use crate::{
     models::toilet::{NewToilet, UpdateToilet},
-    services::toilet_service::{create_toilet, update_toilet},
+    services::toilet_service::{create_toilet, get_toilets, update_toilet},
     AppState,
 };
 
@@ -20,4 +20,7 @@ pub async fn update_toilet_controller(
 ) -> impl Responder {
     // Appeler le service update_location et renvoyer la réponse
     update_toilet(state, id_toilet, updated_toilet).await
+}
+pub async fn get_toilet_controller(state: web::Data<AppState>) -> impl Responder {
+    get_toilets(state).await
 }

@@ -63,3 +63,16 @@ pub async fn update_toilet(
         }
     }
 }
+
+pub async fn get_toilets(state: web::Data<AppState>) -> impl Responder {
+    let mut conn = state
+        .conn
+        .get()
+        .expect("Failed to get a connection from the pool.");
+    match toilet.load::<Toilet>(&mut conn) {
+        Ok(all_toilets) => HttpResponse::Ok().json(all_toilets),
+        Err(err) => {
+            HttpResponse::InternalServerError().body(format!("Failed to retrieve toilet: {}", err))
+        }
+    }
+}
