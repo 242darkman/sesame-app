@@ -43,6 +43,11 @@ pub async fn find_user_with_keycloak_id(
             println!("url:  {url}");
             let user = std::env::var("KEYCLOAK_USER").unwrap_or_else(|_| "admin".into());
             let password = std::env::var("KEYCLOAK_PASSWORD").unwrap_or_else(|_| "admin".into());
+
+            // Ajoutez des logs pour vérifier les variables d'environnement
+            println!("Keycloak user: {}", user);
+            println!("Keycloak password: {}", password);
+
             let client = reqwest::Client::new();
             match KeycloakAdminToken::acquire(&url, &user, &password, &client).await {
                 Ok(admin_token) => {

@@ -1,11 +1,17 @@
 use actix::prelude::*;
-use actix_web::{web, HttpRequest, Responder};
+use actix_web::{web, HttpRequest, HttpResponse, Responder};
 use actix_web_actors::ws;
+use diesel::pg::PgConnection;
+use diesel::r2d2::ConnectionManager;
+use r2d2::PooledConnection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{self};
 use std::time::{Duration, Instant};
 use uuid::Uuid;
+
+use crate::services::user_service::find_user_with_keycloak_id;
+use crate::utils::app_state::AppState;
 
 /// Notification structure utilisée pour envoyer des messages de notification aux clients WebSocket.
 #[derive(Message, Serialize, Deserialize)]
@@ -228,13 +234,45 @@ impl Handler<Notification> for NotificationServer {
     }
 }
 
+/// Fonction pour initialiser l'utilisateur
+async fn initialize_user(
+    user_id: Uuid,
+    pool: web::Data<AppState>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut conn: r2d2::PooledConnection<diesel::r2d2::ConnectionManager<diesel::PgConnection>> =
+        pool.conn
+            .get()
+            .expect("couldn't get db connection from pool");
+    match find_user_with_keycloak_id(&mut conn, user_id).await {
+        Ok(Some(_user)) => {
+            println!("User {} exists or was created successfully", user_id);
+            Ok(())
+        }
+        Ok(None) => {
+            println!("User {} could not be created", user_id);
+            Err("User could not be created".into())
+        }
+        Err(e) => {
+            println!("Error finding or creating user: {:?}", e);
+            Err(e.into())
+        }
+    }
+}
+
 /// Handler pour les connexions WebSocket
 pub async fn ws_handler(
     req: HttpRequest,
     stream: web::Payload,
     data: web::Data<Addr<NotificationServer>>,
+    pool: web::Data<AppState>,
 ) -> impl Responder {
     let user_id = Uuid::parse_str(req.match_info().get("user_id").unwrap()).unwrap();
+
+    // Initialisez l'utilisateur
+    if let Err(e) = initialize_user(user_id, pool).await {
+        println!("Failed to initialize user: {:?}", e);
+    }
+
     let ws = WsSession {
         id: Uuid::new_v4(),
         user_id,
