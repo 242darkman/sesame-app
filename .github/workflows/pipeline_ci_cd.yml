@@ -31,11 +31,18 @@ jobs:
       run: cargo test --verbose
       working-directory: ./secured-api
     
-      # Flutter setup et build
+    # Flutter setup et build
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
         flutter-version: '3.22.2'
+    
+    # Set up JDK 11
+    - name: Set up JDK 11
+      uses: actions/setup-java@v2
+      with:
+        java-version: '11'
+        distribution: 'adopt'
 
     # Install dependencies
     - name: Install dependencies
@@ -46,6 +53,7 @@ jobs:
     - name: Build the app
       run: flutter build apk --debug
       working-directory: ./client_app
+    
     # Run tests
     - name: Run tests
       run: flutter test
