@@ -16,6 +16,20 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
+    # Rust setup et build
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        profile: minimal
+        override: true
+    - name: Build Rust 
+      run: cargo build --verbose
+      working-directory: ./secured-api
+    - name: Run tests
+      run: cargo test --verbose
+      working-directory: ./secured-api
     
       # Flutter setup et build
     - name: Set up Flutter
