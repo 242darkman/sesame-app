@@ -2,7 +2,6 @@ use actix::prelude::*;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
-use controllers::comment_controller::{create_comment_controller, update_comment_controller};
 use controllers::intervention_controller::{
     create_intervention_controller, update_intervention_controller,
 };
@@ -15,9 +14,7 @@ use controllers::toilet_controller::{
 use controllers::zone_controller::{create_zone_controller, update_zone_controller};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
-
 use web_socket_logic::web_socket::{ws_handler, NotificationServer};
-
 
 mod controllers;
 mod models;
@@ -98,6 +95,7 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/api/v1")
                     .wrap(keycloak_auth)
                     .route("/ws/{user_id}", web::get().to(ws_handler)),
+            )
             .service(
                 web::scope("/locations")
                     .route("", web::post().to(create_location_controller))
