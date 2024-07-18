@@ -15,9 +15,7 @@ use controllers::toilet_controller::{
 use controllers::zone_controller::{create_zone_controller, update_zone_controller};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
-
 use web_socket_logic::web_socket::{ws_handler, NotificationServer};
-
 
 mod controllers;
 mod models;
@@ -98,6 +96,7 @@ async fn main() -> std::io::Result<()> {
                 web::scope("/api/v1")
                     .wrap(keycloak_auth)
                     .route("/ws/{user_id}", web::get().to(ws_handler)),
+            )
             .service(
                 web::scope("/locations")
                     .route("", web::post().to(create_location_controller))
