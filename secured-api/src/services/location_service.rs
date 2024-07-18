@@ -4,11 +4,16 @@ use crate::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
-
-/**
- * Céatio
- */
-
+/// Crée un nouvel emplacement
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `new_location` - Les données du nouvel emplacement à créer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant l'emplacement créé ou une erreur
 pub async fn create_location(
     state: web::Data<AppState>,
     new_location: web::Json<NewLocation>,
@@ -32,6 +37,18 @@ pub async fn create_location(
         }
     }
 }
+
+/// Met à jour un emplacement existant
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_location` - L'identifiant de l'emplacement à mettre à jour
+/// * `updated_location` - Les nouvelles données de l'emplacement
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
 pub async fn update_location(
     state: web::Data<AppState>,
     id_location: web::Path<String>,
@@ -58,7 +75,18 @@ pub async fn update_location(
         }
     }
 }
+#[test]
+fn test_get_location() {}
 
+/// Récupère tous les emplacements
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant la liste des emplacements ou une erreur
 pub async fn get_locations(state: web::Data<AppState>) -> impl Responder {
     let mut conn = state
         .conn

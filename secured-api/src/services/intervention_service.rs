@@ -4,9 +4,17 @@ use crate::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
-/**
- * Céatio
- */
+
+/// Crée une nouvelle intervention
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `new_intervention` - Les données de la nouvelle inytervention à créer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant l'intervention créé ou une erreur
 pub async fn create_intervention(
     state: web::Data<AppState>,
     new_intervention: web::Json<NewIntervention>,
@@ -35,6 +43,17 @@ pub async fn create_intervention(
     }
 }
 
+/// Met à jour une intervention existant
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_intervention` - L'identifiant de l'intervention à mettre à jour
+/// * `updated_intervention` - Les nouvelles données de l'intervention
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
 pub async fn update_intervention(
     state: web::Data<AppState>,
     id_intervention: web::Path<String>,
@@ -64,5 +83,25 @@ pub async fn update_intervention(
         Err(err) => {
             HttpResponse::InternalServerError().body(format!("Failed to update toilet: {}", err))
         }
+    }
+}
+/// Récupère toutes les interventions
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant la liste des interventions ou une erreur
+pub async fn get_interventions(state: web::Data<AppState>) -> impl Responder {
+    let mut conn = state
+        .conn
+        .get()
+        .expect("Failed to get a connection from the pool.");
+    match intervention.load::<Intervention>(&mut conn) {
+        Ok(all_interventions) => HttpResponse::Ok().json(all_interventions),
+        Err(err) => HttpResponse::InternalServerError()
+            .body(format!("Failed to retrieve interventions: {}", err)),
     }
 }

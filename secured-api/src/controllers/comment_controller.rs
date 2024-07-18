@@ -1,6 +1,6 @@
 use crate::{
     models::comment::{NewComment, UpdateComment},
-    services::comment_service::{create_comment, update_comment},
+    services::comment_service::{create_comment, get_comment, update_comment},
     AppState,
 };
 
@@ -20,4 +20,7 @@ pub async fn update_comment_controller(
 ) -> impl Responder {
     // Appeler le service update_location et renvoyer la réponse
     update_comment(state, id_comment, updated_comment).await
+}
+pub async fn get_comment_controller(state: web::Data<AppState>) -> impl Responder {
+    get_comment(state).await
 }

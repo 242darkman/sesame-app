@@ -5,10 +5,16 @@ use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
 
-/**
- * Céatio
- */
-
+/// Crée un nouvel defaults
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `new_defaults` - Les données du nouvel defaut à créer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant le defaut créé ou une erreur
 pub async fn create_defaults(
     state: web::Data<AppState>,
     new_defaults: web::Json<NewDefaults>,
@@ -33,6 +39,17 @@ pub async fn create_defaults(
     }
 }
 
+/// Met à jour un defaults existant
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_defaults` - L'identifiant du defauts à mettre à jour
+/// * `updated_defaults` - Les nouvelles données du defaults
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
 pub async fn update_defaults(
     state: web::Data<AppState>,
     id_defaults: web::Path<String>,
