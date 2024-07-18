@@ -17,6 +17,12 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
+    - name: Set up Java
+      uses: actions/setup-java@v3
+      with:
+        java-version: 17
+        distribution: 'temurin' # Specify the distribution here
+
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
@@ -27,3 +33,13 @@ jobs:
 
     - name: Run tests
       run: flutter test
+
+    - name: Build Android
+      run: flutter build apk --release
+
+    - name: Build iOS
+      if: runner.os == 'macOS'
+      run: |
+        flutter build ios --release
+      env:
+        CI: true
