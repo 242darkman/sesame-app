@@ -1,52 +1,36 @@
-name: pipe
-
-on:
-  push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
-
-env:
-  CARGO_TERM_COLOR: always
-
+name: build
+on: push
 jobs:
-  build:
-
+  build-apk:
     runs-on: ubuntu-latest
-
+    steps: 
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '11.x'
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '3.22.2'
+          channel: stable
+      - name: Build apk
+        run: |
+          flutter pub get
+          flutter format --set-exit-if-changed .
+          flutter analyze
+          flutter test
+          flutter build apk --debug
+  build-web:
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-
-    # Rust setup et build
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: stable
-        profile: minimal
-        override: true
-    - name: Build Rust 
-      run: cargo build --verbose
-      working-directory: ./secured-api
-    - name: Run tests
-      run: cargo test --verbose
-      working-directory: ./secured-api
-    
-      # Flutter setup et build
-    - name: Set up Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        flutter-version: '3.22.2'
-
-    # Install dependencies
-    - name: Install dependencies
-      run: flutter pub get
-      working-directory: ./client_app
-
-    # Build the app
-    - name: Build the app
-      run: flutter build apk --debug
-      working-directory: ./client_app
-    # Run tests
-    - name: Run tests
-      run: flutter test
-      working-directory: ./client_app
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter-action@v1
+        with:
+          flutter-version: '2.5.0'
+          channel: stable 
+      - name: Build web
+        run: |
+          flutter pub get
+          flutter format --set-exit-if-changed .
+          flutter analyze
+          flutter test
+          flutter build web
