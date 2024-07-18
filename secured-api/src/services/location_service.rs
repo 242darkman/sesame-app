@@ -3,6 +3,7 @@ use crate::schema::locations::dsl::*;
 use crate::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
+use serde_json::json;
 use uuid::Uuid;
 
 /**
@@ -32,6 +33,7 @@ pub async fn create_location(
         }
     }
 }
+
 pub async fn update_location(
     state: web::Data<AppState>,
     id_location: web::Path<String>,
@@ -59,15 +61,17 @@ pub async fn update_location(
     }
 }
 
-pub async fn get_locations(state: web::Data<AppState>) -> impl Responder {
+pub async fn get_locations(state: web::Data<AppState>) -> Result<Vec<Location>, actix_web::Error> {
     let mut conn = state
         .conn
         .get()
         .expect("Failed to get a connection from the pool.");
 
     match locations.load::<Location>(&mut conn) {
-        Ok(all_locations) => HttpResponse::Ok().json(all_locations),
-        Err(err) => HttpResponse::InternalServerError()
-            .body(format!("Failed to retrieve locations: {}", err)),
+        Ok(all_locations) => Ok(all_locations),
+        Err(err) => Err(actix_web::error::ErrorInternalServerError(format!(
+            "Failed to retrieve locations: {}",
+            err
+        ))),
     }
 }
