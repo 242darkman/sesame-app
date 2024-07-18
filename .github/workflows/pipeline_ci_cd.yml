@@ -42,6 +42,10 @@ jobs:
       run: flutter pub get
       working-directory: ./client_app
 
+    # Build the app
+    - name: Build the app
+      run: flutter build apk --debug
+      working-directory: ./client_app
     # Run tests
     - name: Run tests
       run: flutter test
