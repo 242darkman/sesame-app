@@ -4,9 +4,17 @@ use crate::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
-/**
- * Céatio
- */
+
+/// Crée une nouvelle toilette
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `new_toilet` - Les données de la nouvelle toilette à créer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant la toilette créé ou une erreur
 pub async fn create_toilet(
     state: web::Data<AppState>,
     new_toilet: web::Json<NewToilet>,
@@ -15,7 +23,6 @@ pub async fn create_toilet(
         .conn
         .get()
         .expect("Failed to get a connection from the pool.");
-
     let new_toilet = NewToilet {
         toiletstatus: new_toilet.toiletstatus.clone(),
         idzone: new_toilet.idzone.clone(),
@@ -32,6 +39,17 @@ pub async fn create_toilet(
     }
 }
 
+/// Met à jour une toilette existant
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_toilet` - L'identifiant de la toilette à mettre à jour
+/// * `updated_toilet` - Les nouvelles données de la toilette
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
 pub async fn update_toilet(
     state: web::Data<AppState>,
     id_toilet: web::Path<String>,
@@ -64,6 +82,15 @@ pub async fn update_toilet(
     }
 }
 
+/// Récupère toutes les toilettes
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant la liste des toilettes ou une erreur
 pub async fn get_toilets(state: web::Data<AppState>) -> impl Responder {
     let mut conn = state
         .conn

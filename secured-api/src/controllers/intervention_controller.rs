@@ -1,6 +1,6 @@
 use crate::{
     models::intervention::{NewIntervention, UpdateIntervention},
-    services::intervention_service::{create_intervention, update_intervention},
+    services::intervention_service::{create_intervention, get_interventions, update_intervention},
     AppState,
 };
 
@@ -20,4 +20,8 @@ pub async fn update_intervention_controller(
 ) -> impl Responder {
     // Appeler le service update_location et renvoyer la réponse
     update_intervention(state, id_intervention, updated_intervention).await
+}
+
+pub async fn get_intervention_controller(state: web::Data<AppState>) -> impl Responder {
+    get_interventions(state).await
 }

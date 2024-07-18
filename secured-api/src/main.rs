@@ -3,7 +3,7 @@ use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
 use controllers::intervention_controller::{
-    create_intervention_controller, update_intervention_controller,
+    create_intervention_controller, get_intervention_controller, update_intervention_controller,
 };
 use controllers::location_controller::{
     create_location_controller, get_locations_controller, update_location_controller,
@@ -11,6 +11,7 @@ use controllers::location_controller::{
 use controllers::toilet_controller::{
     create_toilet_controller, get_toilet_controller, update_toilet_controller,
 };
+
 use controllers::zone_controller::{create_zone_controller, update_zone_controller};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
@@ -116,7 +117,8 @@ async fn main() -> std::io::Result<()> {
             .service(
                 web::scope("/intervention") // Ajout d'une nouvelle route de scope pour les zones
                     .route("", web::post().to(create_intervention_controller))
-                    .route("/{id}", web::put().to(update_intervention_controller)),
+                    .route("/{id}", web::put().to(update_intervention_controller))
+                    .route("", web::get().to(get_intervention_controller)),
             )
             .service(
                 web::scope("/comment") // Ajout d'une nouvelle route de scope pour les zones

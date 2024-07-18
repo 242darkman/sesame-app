@@ -4,9 +4,17 @@ use crate::AppState;
 use actix_web::{web, HttpResponse, Responder};
 use diesel::prelude::*;
 use uuid::Uuid;
-/**
- * Céatio
- */
+
+/// Crée une nouvelle zone
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `new_zone` - Les données de la nouvelle zone à créer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant la zone créé ou une erreur
 pub async fn create_zone(
     state: web::Data<AppState>,
     new_zone: web::Json<NewZone>,
@@ -33,6 +41,17 @@ pub async fn create_zone(
     }
 }
 
+/// Met à jour une zone existant
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_zone` - L'identifiant de la zone à mettre à jour
+/// * `updated_zone` - Les nouvelles données de la zone
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
 pub async fn update_zone(
     state: web::Data<AppState>,
     id_zone: web::Path<String>,
