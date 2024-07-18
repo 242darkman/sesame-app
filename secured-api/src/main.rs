@@ -2,7 +2,6 @@ use actix::prelude::*;
 use actix_cors::Cors;
 use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
-use controllers::comment_controller::{create_comment_controller, update_comment_controller};
 use controllers::intervention_controller::{
     create_intervention_controller, update_intervention_controller,
 };
