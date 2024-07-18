@@ -105,3 +105,28 @@ pub async fn get_interventions(state: web::Data<AppState>) -> impl Responder {
             .body(format!("Failed to retrieve interventions: {}", err)),
     }
 }
+
+pub async fn get_intervention_by_id(
+    state: web::Data<AppState>,
+    id_intervention: web::Path<String>,
+) -> impl Responder {
+    let mut conn = state
+        .conn
+        .get()
+        .expect("Failed to get a connection from the pool.");
+    let intervention_uuid = match Uuid::parse_str(&id_intervention) {
+        Ok(uuid) => uuid,
+        Err(_) => return HttpResponse::BadRequest().body("Invalid UUID format."),
+    };
+    match intervention
+        .filter(id.eq(intervention_uuid))
+        .first::<Intervention>(&mut conn)
+    {
+        Ok(interventions) => HttpResponse::Ok().json(interventions),
+        Err(diesel::result::Error::NotFound) => {
+            HttpResponse::NotFound().body("Location not found.")
+        }
+        Err(err) => HttpResponse::InternalServerError()
+            .body(format!("Failed to retrieve intervention: {}", err)),
+    }
+}

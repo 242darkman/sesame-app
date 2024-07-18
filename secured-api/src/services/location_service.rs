@@ -22,7 +22,6 @@ pub async fn create_location(
         .conn
         .get()
         .expect("Failed to get a connection from the pool.");
-
     let new_location = NewLocation {
         name: new_location.name.clone(),
     };
