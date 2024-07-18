@@ -32,6 +32,31 @@ pub async fn create_location(
         }
     }
 }
+
+
+/**
+ * 
+ * Création de location avec websocket
+ */
+/* pub async fn create_location(
+    pool: &DbPool,
+    new_location: NewLocation,
+) -> Result<Location, String> {
+    let mut conn = pool
+        .get()
+        .map_err(|_| "Failed to get a connection from the pool.".to_string())?;
+
+    let new_location = NewLocation {
+        name: new_location.name,
+    };
+
+    diesel::insert_into(locations::table)
+        .values(&new_location)
+        .get_result::<Location>(&mut conn)
+        .map_err(|err| format!("Failed to insert location: {}", err))
+} */
+
+
 pub async fn update_location(
     state: web::Data<AppState>,
     id_location: web::Path<String>,

@@ -30,3 +30,19 @@ jobs:
     - name: Run tests
       run: cargo test --verbose
       working-directory: ./secured-api
+    
+      # Flutter setup et build
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.22.2'
+
+     # Install dependencies
+    - name: Install dependencies
+      run: flutter pub get
+      # Build the app
+    - name: Build the app
+      run: flutter build apk --debug
+      # Run tests
+    - name: Run tests
+      run: flutter test
