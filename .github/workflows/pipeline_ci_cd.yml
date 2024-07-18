@@ -1,12 +1,13 @@
-name: Flutter CI
+name: pipe
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "master" ]
   pull_request:
-    branches:
-      - main
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   build:
@@ -14,32 +15,38 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v4
 
-    - name: Set up Java
-      uses: actions/setup-java@v3
+    # Rust setup et build
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
       with:
-        java-version: 17
-        distribution: 'temurin' # Specify the distribution here
-
+        toolchain: stable
+        profile: minimal
+        override: true
+    - name: Build Rust 
+      run: cargo build --verbose
+      working-directory: ./secured-api
+    - name: Run tests
+      run: cargo test --verbose
+      working-directory: ./secured-api
+    
+      # Flutter setup et build
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: 'latest'
+        flutter-version: '3.22.2'
 
+    # Install dependencies
     - name: Install dependencies
       run: flutter pub get
+      working-directory: ./client_app
 
+    # Build the app
+    - name: Build the app
+      run: flutter build apk --debug
+      working-directory: ./client_app
+    # Run tests
     - name: Run tests
       run: flutter test
-
-    - name: Build Android
-      run: flutter build apk --release
-
-    - name: Build iOS
-      if: runner.os == 'macOS'
-      run: |
-        flutter build ios --release
-      env:
-        CI: true
+      working-directory: ./client_app
