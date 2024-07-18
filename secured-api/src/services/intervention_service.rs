@@ -106,6 +106,18 @@ pub async fn get_interventions(state: web::Data<AppState>) -> impl Responder {
     }
 }
 
+/// Récupère une intervention par son ID
+///
+/// # Arguments
+///
+/// * `state` - L'état de l'application contenant le pool de connexions
+/// * `id_intervention` - L'identifiant de l'intervention à récupérer
+///
+/// # Retourne
+///
+/// * `HttpResponse` - La réponse HTTP contenant l'intervention ou une erreur
+///
+
 pub async fn get_intervention_by_id(
     state: web::Data<AppState>,
     id_intervention: web::Path<String>,
@@ -124,7 +136,7 @@ pub async fn get_intervention_by_id(
     {
         Ok(interventions) => HttpResponse::Ok().json(interventions),
         Err(diesel::result::Error::NotFound) => {
-            HttpResponse::NotFound().body("Location not found.")
+            HttpResponse::NotFound().body("intervention not found.")
         }
         Err(err) => HttpResponse::InternalServerError()
             .body(format!("Failed to retrieve intervention: {}", err)),
