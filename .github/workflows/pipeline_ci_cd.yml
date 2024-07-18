@@ -37,15 +37,16 @@ jobs:
       with:
         flutter-version: '3.22.2'
 
-     # Install dependencies
+    # Install dependencies
     - name: Install dependencies
       run: flutter pub get
       working-directory: ./client_app
-      # Build the app
+
+    # Build the app
     - name: Build the app
       run: flutter build apk --debug
       working-directory: ./client_app
-      # Run tests
+    # Run tests
     - name: Run tests
       run: flutter test
       working-directory: ./client_app
