@@ -33,6 +33,7 @@ class WebSocketService with ChangeNotifier {
   /// la fermeture de la connexion.
   Future<void> connect(String userId) async {
     final token = await storage.read(key: "keycloak_token");
+    final headers = {'Authorization': 'Bearer $token'};
     logger.i("token ws $token");
 
     if (token != null) {
@@ -41,7 +42,7 @@ class WebSocketService with ChangeNotifier {
 
       logger.i("Connecting to WebSocket URL: $url");
 
-      _channel = IOWebSocketChannel.connect(Uri.parse(url));
+      _channel = IOWebSocketChannel.connect(Uri.parse(url), headers: headers);
 
       _channel!.stream.listen((message) {
         _message = message;
