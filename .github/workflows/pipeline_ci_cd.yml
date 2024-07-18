@@ -19,6 +19,7 @@ jobs:
           flutter analyze
           flutter test
           flutter build apk --debug
+        working-directory: ./client_app
   build-web:
     runs-on: ubuntu-latest
     steps:
@@ -34,3 +35,4 @@ jobs:
           flutter analyze
           flutter test
           flutter build web
+        working-directory: ./client_app
