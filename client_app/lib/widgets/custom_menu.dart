@@ -1,5 +1,5 @@
-import 'package:client_app/screens/scanner/scanner_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomMenu extends StatelessWidget {
   const CustomMenu({super.key});
@@ -23,10 +23,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ScannerScreen()),
-                );
+                context.go('/app/scanner');
               },
             ),
           ),
@@ -38,7 +35,9 @@ class CustomMenu extends StatelessWidget {
                 color: Color(0xFF779DA0),
                 size: 35.0,
               ),
-              onPressed: () {},
+              onPressed: () {
+                context.go('/app/scanner');
+              },
             ),
           ),
           Padding(
@@ -49,7 +48,9 @@ class CustomMenu extends StatelessWidget {
                 color: Color(0xFF779DA0),
                 size: 35.0,
               ),
-              onPressed: () {},
+              onPressed: () {
+                context.go('/app/scanner/settings');
+              },
             ),
           ),
         ],

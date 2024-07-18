@@ -57,15 +57,8 @@ class _CustomButtonState extends State<CustomButton>
       width: 180,
       height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
         color: const Color(0xFF30959B),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            offset: const Offset(0, 5),
-            blurRadius: 10,
-          ),
-        ],
       ),
       child: Center(
         child: Text(
@@ -85,15 +78,8 @@ class _CustomButtonState extends State<CustomButton>
       width: 180,
       height: 50,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(8),
         color: const Color(0xFF30959B),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.withOpacity(0.3),
-            offset: const Offset(0, 5),
-            blurRadius: 10,
-          ),
-        ],
       ),
       child: Center(
         child: Text(
