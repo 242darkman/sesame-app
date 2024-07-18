@@ -21,3 +21,8 @@ pub struct NewLocation {
 pub struct UpdateLocation {
     pub name: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct LocationsResponse {
+    pub locations: Vec<Location>,
+}

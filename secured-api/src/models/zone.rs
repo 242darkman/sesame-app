@@ -28,3 +28,8 @@ pub struct UpdateZone {
     pub numlevel: i32,
     pub idlocation: Uuid,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct ZonesResponse {
+    pub zones: Vec<Zone>,
+}

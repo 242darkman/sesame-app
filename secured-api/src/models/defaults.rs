@@ -22,3 +22,8 @@ pub struct NewDefaults {
 pub struct UpdateDefault {
     pub defaulttype: String,
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct ProblemTypesResponse {
+    pub problem_types: Vec<Defaults>,
+}

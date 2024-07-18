@@ -1,5 +1,7 @@
 use crate::models::user::{CreateUser, ModifyUser, NewUser, User, UserChangeset};
 use crate::schema::users::dsl::{email, id, keycloak_uuid, users};
+use crate::utils::app_state::AppState;
+use actix_web::web;
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
 use diesel::r2d2::ConnectionManager;
@@ -96,6 +98,31 @@ pub async fn find_user_with_keycloak_id(
                     Ok(None)
                 }
             }
+        }
+    }
+}
+
+/// Function to initialize the user
+pub async fn initialize_user(
+    user_id: Uuid,
+    pool: web::Data<AppState>,
+) -> Result<(), Box<dyn std::error::Error>> {
+    let mut conn: PooledConnection<ConnectionManager<PgConnection>> = pool
+        .conn
+        .get()
+        .expect("couldn't get db connection from pool");
+    match find_user_with_keycloak_id(&mut conn, user_id).await {
+        Ok(Some(_user)) => {
+            println!("User {} exists or was created successfully", user_id);
+            Ok(())
+        }
+        Ok(None) => {
+            println!("User {} could not be created", user_id);
+            Err("User could not be created".into())
+        }
+        Err(e) => {
+            println!("Error finding or creating user: {:?}", e);
+            Err(e.into())
         }
     }
 }

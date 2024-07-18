@@ -1,17 +1,19 @@
 use actix::prelude::*;
 use actix_web::{web, HttpRequest, Responder};
 use actix_web_actors::ws;
-use diesel::pg::PgConnection;
-use diesel::r2d2::ConnectionManager;
-use r2d2::PooledConnection;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{self};
 use std::time::{Duration, Instant};
 use uuid::Uuid;
 
+use crate::models::defaults::ProblemTypesResponse;
+use crate::models::location::LocationsResponse;
+use crate::models::zone::ZonesResponse;
+use crate::services::defaults_service::get_problem_types;
 use crate::services::location_service::get_locations;
-use crate::services::user_service::find_user_with_keycloak_id;
+use crate::services::user_service::initialize_user;
+use crate::services::zone_service::get_zones;
 use crate::utils::app_state::AppState;
 
 /// Notification structure used to send notification messages to WebSocket clients.
@@ -84,17 +86,22 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsSession {
                             println!("2 seconds have passed since the first message was received.");
                         });
                     }
-                    Err(e) => {
-                        if text == "REQUEST_LOCATIONS" {
-                            self.addr.do_send(RequestLocations {
-                                addr: ctx.address(),
-                            });
-                        } else {
+                    Err(e) => match text.to_string().as_str() {
+                        "REQUEST_LOCATIONS" => self.addr.do_send(RequestLocations {
+                            addr: ctx.address(),
+                        }),
+                        "REQUEST_ZONES" => self.addr.do_send(RequestZones {
+                            addr: ctx.address(),
+                        }),
+                        "REQUEST_PROBLEM_TYPES" => self.addr.do_send(RequestProblemTypes {
+                            addr: ctx.address(),
+                        }),
+                        _ => {
                             println!("Failed to deserialize message: {:?}", e);
                             println!("Message content: {}", text);
                             ctx.stop();
                         }
-                    }
+                    },
                 }
             }
             _ => {
@@ -243,41 +250,83 @@ impl Handler<RequestLocations> for NotificationServer {
         actix::spawn(async move {
             match get_locations(pool).await {
                 Ok(locations_result) => {
-                    let response = serde_json::to_string(&locations_result)
-                        .unwrap_or_else(|_| "[]".to_string());
-                    println!("Sending locations: {}", response);
-                    addr.do_send(WsMessage(response));
+                    let response = LocationsResponse {
+                        locations: locations_result,
+                    };
+                    let response_json = serde_json::to_string(&response)
+                        .unwrap_or_else(|_| "{\"locations\":[]}".to_string());
+                    println!("Sending locations: {}", response_json);
+                    addr.do_send(WsMessage(response_json));
                 }
                 Err(_) => {
-                    addr.do_send(WsMessage("[]".to_string()));
+                    addr.do_send(WsMessage("{\"locations\":[]}".to_string()));
                 }
             }
         });
     }
 }
 
-/// Function to initialize the user
-async fn initialize_user(
-    user_id: Uuid,
-    pool: web::Data<AppState>,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let mut conn: PooledConnection<ConnectionManager<PgConnection>> = pool
-        .conn
-        .get()
-        .expect("couldn't get db connection from pool");
-    match find_user_with_keycloak_id(&mut conn, user_id).await {
-        Ok(Some(_user)) => {
-            println!("User {} exists or was created successfully", user_id);
-            Ok(())
-        }
-        Ok(None) => {
-            println!("User {} could not be created", user_id);
-            Err("User could not be created".into())
-        }
-        Err(e) => {
-            println!("Error finding or creating user: {:?}", e);
-            Err(e.into())
-        }
+/// Message to request zones
+#[derive(Message)]
+#[rtype(result = "()")]
+struct RequestZones {
+    addr: Addr<WsSession>,
+}
+
+impl Handler<RequestZones> for NotificationServer {
+    type Result = ();
+
+    fn handle(&mut self, msg: RequestZones, _: &mut Context<Self>) {
+        let pool = self.pool.clone();
+        let addr = msg.addr.clone();
+        actix::spawn(async move {
+            match get_zones(pool).await {
+                Ok(zones_result) => {
+                    let response = ZonesResponse {
+                        zones: zones_result,
+                    };
+                    let response_json = serde_json::to_string(&response)
+                        .unwrap_or_else(|_| "{\"zones\":[]}".to_string());
+                    println!("Sending zones: {}", response_json);
+                    addr.do_send(WsMessage(response_json));
+                }
+                Err(_) => {
+                    addr.do_send(WsMessage("{\"zones\":[]}".to_string()));
+                }
+            }
+        });
+    }
+}
+
+/// Message to request probem types
+#[derive(Message)]
+#[rtype(result = "()")]
+struct RequestProblemTypes {
+    addr: Addr<WsSession>,
+}
+
+impl Handler<RequestProblemTypes> for NotificationServer {
+    type Result = ();
+
+    fn handle(&mut self, msg: RequestProblemTypes, _: &mut Context<Self>) {
+        let pool = self.pool.clone();
+        let addr = msg.addr.clone();
+        actix::spawn(async move {
+            match get_problem_types(pool).await {
+                Ok(problem_types_result) => {
+                    let response = ProblemTypesResponse {
+                        problem_types: problem_types_result,
+                    };
+                    let response_json = serde_json::to_string(&response)
+                        .unwrap_or_else(|_| "{\"problem_types\":[]}".to_string());
+                    println!("Sending problem types: {}", response_json);
+                    addr.do_send(WsMessage(response_json));
+                }
+                Err(_) => {
+                    addr.do_send(WsMessage("{\"problem_types\":[]}".to_string()));
+                }
+            }
+        });
     }
 }
 

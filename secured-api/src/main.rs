@@ -9,7 +9,6 @@ use controllers::intervention_controller::{
 use controllers::toilet_controller::{
     create_toilet_controller, get_toilet_controller, update_toilet_controller,
 };
-use controllers::zone_controller::{create_zone_controller, update_zone_controller};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
 use web_socket_logic::web_socket::{ws_handler, NotificationServer};
@@ -94,17 +93,7 @@ async fn main() -> std::io::Result<()> {
                     .wrap(keycloak_auth)
                     .route("/ws/{user_id}", web::get().to(ws_handler)),
             )
-        /*.service(
-            web::scope("/locations")
-                .route("", web::post().to(create_location_controller))
-                .route("/{id}", web::put().to(update_location_controller))
-                .route("", web::get().to(get_locations_controller)),
-        )
-        .service(
-            web::scope("/zones") // Ajout d'une nouvelle route de scope pour les zones
-                .route("", web::post().to(create_zone_controller))
-                .route("/{id}", web::put().to(update_zone_controller)),
-        )
+        /*
         .service(
             web::scope("/toilet") // Ajout d'une nouvelle route de scope pour les zones
                 .route("", web::post().to(create_toilet_controller))
