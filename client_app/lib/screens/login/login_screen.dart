@@ -43,6 +43,7 @@ class LoginScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+        backgroundColor: Colors.white,
         body: Stack(
           fit: StackFit.expand,
           children: [

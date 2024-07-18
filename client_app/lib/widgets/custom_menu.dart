@@ -8,6 +8,7 @@ class CustomMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
+        color: Colors.white,
         border: Border(top: BorderSide(color: Color(0xFFA8A8A8))),
       ),
       child: Row(
