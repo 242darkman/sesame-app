@@ -165,22 +165,6 @@ impl fmt::Display for MessageType {
     }
 }
 
-/// Message to send a friendship notification
-#[derive(Message)]
-#[rtype(result = "()")]
-pub struct SendFriendshipNotification {
-    pub user_id: Uuid,
-    pub message: MessageType,
-}
-
-impl Handler<SendFriendshipNotification> for NotificationServer {
-    type Result = ();
-
-    fn handle(&mut self, msg: SendFriendshipNotification, _: &mut Context<Self>) {
-        self.send_friendship_notification(msg.user_id, msg.message);
-    }
-}
-
 /// Message for connecting a WebSocket session
 struct Connect {
     id: Uuid,
