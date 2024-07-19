@@ -68,12 +68,15 @@ jobs:
         with:
           flutter-version: '3.22.2'
 
+      - name: Install JDK 11
+        run: sudo apt-get install -y openjdk-11-jdk
+
       - name: Install dependencies
         run: flutter pub get
         working-directory: ./client_app
 
       - name: Build Android
-        run: flutter build apk --release
+        run: flutter build apk --release --verbose
         working-directory: ./client_app
 
       - name: Upload artifact
