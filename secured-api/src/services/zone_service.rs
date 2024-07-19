@@ -1,86 +1,45 @@
-use crate::models::zone::{NewZone, UpdateZone, Zone};
+use crate::models::zone::Zone;
 use crate::schema::zone::dsl::*;
 use crate::AppState;
-use actix_web::{web, HttpResponse, Responder};
+use actix_web::web;
 use diesel::prelude::*;
-use uuid::Uuid;
 
-/// Crée une nouvelle zone
+/// Récupère toutes les zones disponibles dans la base de données.
 ///
 /// # Arguments
 ///
-/// * `state` - L'état de l'application contenant le pool de connexions
-/// * `new_zone` - Les données de la nouvelle zone à créer
+/// * `state` - Un état d'application contenant une connexion à la base de données.
 ///
 /// # Retourne
 ///
-/// * `HttpResponse` - La réponse HTTP contenant la zone créé ou une erreur
-pub async fn create_zone(
-    state: web::Data<AppState>,
-    new_zone: web::Json<NewZone>,
-) -> impl Responder {
+/// Cette fonction retourne un `Result<Vec<Zone>, actix_web::Error>`. En cas de succès, elle renvoie un vecteur contenant toutes les zones.
+/// En cas d'échec, elle renvoie une erreur `actix_web::Error` avec un message indiquant la raison de l'échec.
+///
+/// # Exemples
+///
+/// ```
+/// let app_state = web::Data::new(AppState {
+///     conn: /* initialisez ici votre pool de connexions à la base de données */,
+/// });
+///
+/// let zones_result = get_zones(app_state).await;
+/// assert!(zones_result.is_ok());
+/// ```
+///
+/// # Paniques
+///
+/// Cette fonction panique si elle ne parvient pas à obtenir une connexion à partir du pool.
+pub async fn get_zones(state: web::Data<AppState>) -> Result<Vec<Zone>, actix_web::Error> {
     let mut conn = state
         .conn
         .get()
         .expect("Failed to get a connection from the pool.");
 
-    let new_zone = NewZone {
-        name: new_zone.name.clone(),
-        idlocation: new_zone.idlocation.clone(),
-        numlevel: new_zone.numlevel.clone(),
-    };
-
-    match diesel::insert_into(zone)
-        .values(&new_zone)
-        .get_result::<Zone>(&mut conn)
-    {
-        Ok(inserted_zone) => HttpResponse::Created().json(inserted_zone),
-        Err(err) => {
-            HttpResponse::InternalServerError().body(format!("Failed to insert zone: {}", err))
-        }
-    }
-}
-
-/// Met à jour une zone existant
-///
-/// # Arguments
-///
-/// * `state` - L'état de l'application contenant le pool de connexions
-/// * `id_zone` - L'identifiant de la zone à mettre à jour
-/// * `updated_zone` - Les nouvelles données de la zone
-///
-/// # Retourne
-///
-/// * `HttpResponse` - La réponse HTTP indiquant le succès ou l'échec de la mise à jour
-pub async fn update_zone(
-    state: web::Data<AppState>,
-    id_zone: web::Path<String>,
-    updated_zone: web::Json<UpdateZone>,
-) -> impl Responder {
-    let mut conn = state
-        .conn
-        .get()
-        .expect("Failed to get a connection from the pool.");
-
-    let zone_uuid = match Uuid::parse_str(&id_zone) {
-        Ok(uuid) => uuid,
-        Err(_) => return HttpResponse::BadRequest().body("Invalid UUID format."),
-    };
-
-    let target = zone.filter(id.eq(zone_uuid));
-
-    match diesel::update(target)
-        .set((
-            name.eq(&updated_zone.name),
-            idlocation.eq(updated_zone.idlocation),
-            numlevel.eq(updated_zone.numlevel),
-        ))
-        .execute(&mut conn)
-    {
-        Ok(0) => HttpResponse::NotFound().body("zone not found."),
-        Ok(_) => HttpResponse::Ok().body("zone updated successfully."),
-        Err(err) => {
-            HttpResponse::InternalServerError().body(format!("Failed to update zone: {}", err))
-        }
+    match zone.load::<Zone>(&mut conn) {
+        Ok(all_zones) => Ok(all_zones),
+        Err(err) => Err(actix_web::error::ErrorInternalServerError(format!(
+            "Failed to retrieve zones: {}",
+            err
+        ))),
     }
 }

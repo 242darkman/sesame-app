@@ -28,6 +28,14 @@ class WebSocketService with ChangeNotifier {
   /// Getter pour le dernier message.
   String? get message => _message;
 
+  List<dynamic> _locations = [];
+  List<dynamic> _zones = [];
+  List<dynamic> _types = [];
+
+  List<dynamic> get locations => _locations;
+  List<dynamic> get zones => _zones;
+  List<dynamic> get types => _types;
+
   /// Se connecte au serveur WebSocket en utilisant l'[userId] fourni.
   ///
   /// Récupère le jeton Keycloak depuis le stockage sécurisé et établit une
@@ -47,9 +55,7 @@ class WebSocketService with ChangeNotifier {
       _channel = IOWebSocketChannel.connect(Uri.parse(url), headers: headers);
 
       _channel!.stream.listen((message) {
-        _message = message;
-        notifyListeners();
-        logger.i("Reçu: $message");
+        _handleMessage(message);
       }, onError: (error) {
         logger.e("Erreur: $error");
       }, onDone: () {
@@ -64,11 +70,79 @@ class WebSocketService with ChangeNotifier {
     }
   }
 
+  /// Gère les messages reçus du serveur WebSocket.
+  ///
+  /// Cette méthode décode le message JSON et met à jour les variables
+  /// appropriées en fonction du contenu du message.
+  void _handleMessage(String message) {
+    final decodedMessage = jsonDecode(message);
+    logger.i("decodedMessage: $decodedMessage");
+
+    if (decodedMessage is Map<String, dynamic>) {
+      if (decodedMessage.containsKey('locations')) {
+        _locations = decodedMessage['locations'];
+        logger.i("Locations: $_locations");
+      } else if (decodedMessage.containsKey('zones')) {
+        _zones = decodedMessage['zones'];
+        logger.i("Zones: $_zones");
+      } else if (decodedMessage.containsKey('problem_types')) {
+        _types = decodedMessage['problem_types'];
+        logger.i("Types: $_types");
+      } else if (decodedMessage.containsKey('status') &&
+          decodedMessage['status'] == 'Ok') {
+        notifyListeners();
+      } else {
+        _message = message;
+      }
+    } else {
+      _message = message;
+    }
+
+    notifyListeners();
+    logger.i("Reçu: $message");
+  }
+
   /// Envoie un message au serveur WebSocket.
   ///
   /// Utilise le canal WebSocket pour envoyer le [message] fourni.
   void sendMessage(String message) {
     _channel?.sink.add(message);
+  }
+
+  /// Demande la liste des emplacements au serveur WebSocket.
+  ///
+  /// Envoie une requête pour obtenir les emplacements.
+  void requestLocations() {
+    _channel?.sink.add("REQUEST_LOCATIONS");
+  }
+
+  /// Demande la liste des zones au serveur WebSocket.
+  void requestZones() {
+    _channel?.sink.add("REQUEST_ZONES");
+  }
+
+  /// Demande la liste des types au serveur WebSocket.
+  void requestTypes() {
+    _channel?.sink.add("REQUEST_PROBLEM_TYPES");
+  }
+
+  // Method to create a new intervention
+  void createIntervention(
+      Map<String, dynamic> interventionData, String userId) {
+    /*final message = jsonEncode({
+      "user_id": userId,
+      "type": "CREATE_INTERVENTION",
+      "data": interventionData,
+      "message": "Action de création d'intervention"
+    });*/
+
+    _channel?.sink.add(jsonEncode({
+      "user_id": userId,
+      "type": "CREATE_INTERVENTION",
+      "data": interventionData,
+      "message": "Action de création d'intervention"
+    }));
+    //sendMessage(message);
   }
 
   /// Se déconnecte du serveur WebSocket.

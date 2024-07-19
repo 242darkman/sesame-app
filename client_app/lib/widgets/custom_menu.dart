@@ -1,3 +1,4 @@
+import 'package:client_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -23,6 +24,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
+                showCantScanTextNotifier.value = false;
                 context.go('/app/scanner');
               },
             ),
@@ -36,6 +38,7 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
+                showCantScanTextNotifier.value = true;
                 context.go('/app/scanner');
               },
             ),
@@ -49,10 +52,25 @@ class CustomMenu extends StatelessWidget {
                 size: 35.0,
               ),
               onPressed: () {
+                showCantScanTextNotifier.value = true;
                 context.go('/app/scanner/settings');
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.list,
+                color: Color(0xFF779DA0),
+                size: 35.0,
+              ),
+              onPressed: () {
+                showCantScanTextNotifier.value = false;
+                context.go('/app/scanner/reports');
+              },
+            ),
+          )
         ],
       ),
     );

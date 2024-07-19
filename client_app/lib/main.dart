@@ -13,6 +13,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 final keycloakWrapper = KeycloakWrapper();
 final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 final logger = Logger();
+final ValueNotifier<bool> showCantScanTextNotifier = ValueNotifier<bool>(false);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,7 +50,7 @@ void main() async {
     if (token != null && !JwtDecoder.isExpired(token)) {
       final user = await keycloakWrapper.getUserInfo();
       userProvider.setUserInfo(accessToken: token, user: user);
-      final userId = user!['sub'];
+      final userId = user?['sub'];
       await webSocketService.connect(userId);
     }
   }

@@ -1,5 +1,8 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:client_app/main.dart';
 import 'package:client_app/provider/user_provider.dart';
+import 'package:client_app/services/websocket_service.dart';
 import 'package:client_app/utils/env.dart';
 import 'package:client_app/utils/get_bundle_identifier.dart';
 import 'package:client_app/widgets/custom_button_widget.dart';
@@ -36,6 +39,12 @@ class LoginScreen extends StatelessWidget {
         accessToken: keycloakWrapper.accessToken!,
         user: await keycloakWrapper.getUserInfo() ?? {},
       );
+
+      // Obtenir l'instance de WebSocketService
+      final webSocketService =
+          Provider.of<WebSocketService>(context, listen: false);
+      final userId = userProvider.user!['sub'];
+      await webSocketService.connect(userId);
     }
 
     return isLoggedIn;

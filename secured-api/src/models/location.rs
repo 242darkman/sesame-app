@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Queryable, Selectable, Serialize, Insertable, Deserialize)]
+#[derive(Queryable, Selectable, Serialize, Insertable, Deserialize, Clone, Debug)]
 #[diesel(table_name = crate::schema::locations)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Location {
@@ -20,4 +20,9 @@ pub struct NewLocation {
 #[diesel(table_name = crate::schema::locations)]
 pub struct UpdateLocation {
     pub name: String,
+}
+
+#[derive(Serialize, Deserialize)]
+pub struct LocationsResponse {
+    pub locations: Vec<Location>,
 }

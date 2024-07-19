@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
@@ -18,7 +19,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () {
-          Navigator.pop(context);
+          if (Navigator.canPop(context)) {
+            context.pop();
+          } else {
+            context.go('/app/scanner');
+          }
         },
       ),
       backgroundColor: const Color(0xFF779DA0),
