@@ -1,0 +1,114 @@
+name: CI_CD
+
+on:
+  push:
+    branches: ["master"]
+  pull_request:
+    branches: ["master"]
+  workflow_dispatch: # Permet l'exécution manuelle du workflow
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  # Job pour le projet Rust
+  build_rust:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Build Rust
+        run: cargo build --verbose
+        working-directory: ./secured-api
+
+      - name: Run tests
+        run: cargo test --verbose
+        working-directory: ./secured-api
+
+  # Job pour le projet Flutter
+  build_flutter:
+    runs-on: ubuntu-latest
+    needs: build_rust  # Assurez-vous que le job Rust est terminé avant de commencer Flutter
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+  # working-directory: sesame-app/client_app
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        # working-directory: sesame-app/client_app
+        with:
+          flutter-version: '3.22.2'
+
+      - name: Install dependencies
+        run: flutter pub get
+        working-directory: ./client_app
+
+  # Job pour construire l'application Android
+  build_android:
+    runs-on: ubuntu-latest
+    needs: build_flutter
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build Android
+        run: flutter build apk --release
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+
+  # Job pour construire l'application iOS
+  build_ios:
+    runs-on: macos-latest
+    needs: build_flutter
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.2'
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Install CocoaPods
+        run: |
+          brew install cocoapods
+          cd ios
+          pod install
+          cd ..
+
+      - name: Build iOS
+        run: flutter build ios --release --no-codesign
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-app
+          path: build/ios/ipa/*.ipa

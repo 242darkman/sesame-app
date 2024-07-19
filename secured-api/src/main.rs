@@ -8,7 +8,7 @@ use utils::{app_state::AppState, db_pool::establish_connection, log::logging_set
 use services::intervention_service::{
     create_intervention, get_intervention_with_comments, get_interventions_with_comments,
 };
-use web_socket_logic::web_socket::{ws_handler, NotificationServer}; // Import the intervention services
+use web_socket_logic::web_socket::{ws_handler, NotificationServer};
 
 mod controllers;
 mod models;
