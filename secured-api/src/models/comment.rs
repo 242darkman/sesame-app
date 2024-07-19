@@ -3,7 +3,7 @@ use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-#[derive(Queryable, Selectable, Serialize, Insertable, Deserialize)]
+#[derive(Queryable, Selectable, Serialize, Insertable, Deserialize, Clone, Debug)]
 #[diesel(table_name = crate::schema::comment)]
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Comment {

@@ -1,7 +1,10 @@
+import 'package:client_app/provider/user_provider.dart';
+import 'package:client_app/services/api_service.dart';
 import 'package:client_app/services/websocket_service.dart';
 import 'package:client_app/widgets/custom_app_bar.dart';
 import 'package:client_app/widgets/custom_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 class ProblemWithoutScanScreen extends StatelessWidget {
@@ -28,6 +31,7 @@ class _ProblemFormWithoutScanState extends State<ProblemFormWithoutScan> {
   String? _selectedEmplacement;
   String? _selectedZone;
   String? _selectedType;
+  final TextEditingController _commentController = TextEditingController();
 
   @override
   void initState() {
@@ -43,7 +47,6 @@ class _ProblemFormWithoutScanState extends State<ProblemFormWithoutScan> {
   Widget build(BuildContext context) {
     return Consumer<WebSocketService>(
       builder: (context, webSocketService, child) {
-        // Indicateur de chargement pour les emplacements, zones et types
         final isLoading = webSocketService.locations.isEmpty ||
             webSocketService.zones.isEmpty ||
             webSocketService.types.isEmpty;
@@ -233,6 +236,7 @@ class _ProblemFormWithoutScanState extends State<ProblemFormWithoutScan> {
                           ],
                         ),
                         child: TextFormField(
+                          controller: _commentController,
                           maxLines: 4,
                           decoration: InputDecoration(
                             hintText: 'Donner des informations supplémentaires',
@@ -252,8 +256,49 @@ class _ProblemFormWithoutScanState extends State<ProblemFormWithoutScan> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            // Action à effectuer lorsque le bouton est pressé
+                          onPressed: () async {
+                            final webSocketService =
+                                Provider.of<WebSocketService>(context,
+                                    listen: false);
+                            final userProvider = Provider.of<UserProvider>(
+                                context,
+                                listen: false);
+                            final apiService = ApiService();
+
+                            final selectedLocation = webSocketService.locations
+                                .firstWhere((location) =>
+                                    location['name'] == _selectedEmplacement);
+                            final selectedType = webSocketService.types
+                                .firstWhere((type) =>
+                                    type['defaulttype'] == _selectedType);
+
+                            final newIntervention = {
+                              "iduser": userProvider.user?['sub'],
+                              "description": null,
+                              "iddefault": selectedType['id'],
+                              "idlocation": selectedLocation['id'],
+                              "comment": _commentController.text,
+                            };
+
+                            final response = await apiService
+                                .createIntervention(newIntervention);
+                            if (response.statusCode == 200) {
+                              // Handle successful intervention creation
+                              if (context.mounted) {
+                                context.go(
+                                    '/app/scanner/report_comment/confirmation');
+                              }
+                            } else {
+                              // Handle error in intervention creation
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content:
+                                        Text('Failed to create intervention'),
+                                  ),
+                                );
+                              }
+                            }
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xff30959b),

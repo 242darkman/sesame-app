@@ -3,15 +3,12 @@ use actix_cors::Cors;
 use actix_web::web::Data;
 use actix_web::{web, App, HttpServer};
 use actix_web_middleware_keycloak_auth::{AlwaysReturnPolicy, DecodingKey, KeycloakAuth};
-use controllers::intervention_controller::{
-    create_intervention_controller, update_intervention_controller,
-};
-use controllers::toilet_controller::{
-    create_toilet_controller, get_toilet_controller, update_toilet_controller,
-};
 use utils::{app_state::AppState, db_pool::establish_connection, log::logging_setup};
 
-use web_socket_logic::web_socket::{ws_handler, NotificationServer};
+use services::intervention_service::{
+    create_intervention, get_intervention_with_comments, get_interventions_with_comments,
+};
+use web_socket_logic::web_socket::{ws_handler, NotificationServer}; // Import the intervention services
 
 mod controllers;
 mod models;
@@ -93,23 +90,15 @@ async fn main() -> std::io::Result<()> {
                     .wrap(keycloak_auth)
                     .route("/ws/{user_id}", web::get().to(ws_handler)),
             )
-        /*
-        .service(
-            web::scope("/toilet") // Ajout d'une nouvelle route de scope pour les zones
-                .route("", web::post().to(create_toilet_controller))
-                .route("/{id}", web::put().to(update_toilet_controller))
-                .route("", web::get().to(get_toilet_controller)),
-        )
-        .service(
-            web::scope("/intervention") // Ajout d'une nouvelle route de scope pour les zones
-                .route("", web::post().to(create_intervention_controller))
-                .route("/{id}", web::put().to(update_intervention_controller)),
-        )
-        .service(
-            web::scope("/comment") // Ajout d'une nouvelle route de scope pour les zones
-                .route("", web::post().to(create_intervention_controller))
-                .route("/{id}", web::put().to(update_intervention_controller)),
-        )*/
+            .service(
+                web::scope("/api/intervention")
+                    .route("", web::post().to(create_intervention))
+                    .route("", web::get().to(get_interventions_with_comments))
+                    .route(
+                        "/{interv_id}",
+                        web::get().to(get_intervention_with_comments),
+                    ),
+            )
     })
     .bind(("0.0.0.0", 8080))?
     .run()

@@ -88,6 +88,9 @@ class WebSocketService with ChangeNotifier {
       } else if (decodedMessage.containsKey('problem_types')) {
         _types = decodedMessage['problem_types'];
         logger.i("Types: $_types");
+      } else if (decodedMessage.containsKey('status') &&
+          decodedMessage['status'] == 'Ok') {
+        notifyListeners();
       } else {
         _message = message;
       }
@@ -121,6 +124,25 @@ class WebSocketService with ChangeNotifier {
   /// Demande la liste des types au serveur WebSocket.
   void requestTypes() {
     _channel?.sink.add("REQUEST_PROBLEM_TYPES");
+  }
+
+  // Method to create a new intervention
+  void createIntervention(
+      Map<String, dynamic> interventionData, String userId) {
+    /*final message = jsonEncode({
+      "user_id": userId,
+      "type": "CREATE_INTERVENTION",
+      "data": interventionData,
+      "message": "Action de création d'intervention"
+    });*/
+
+    _channel?.sink.add(jsonEncode({
+      "user_id": userId,
+      "type": "CREATE_INTERVENTION",
+      "data": interventionData,
+      "message": "Action de création d'intervention"
+    }));
+    //sendMessage(message);
   }
 
   /// Se déconnecte du serveur WebSocket.

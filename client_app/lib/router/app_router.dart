@@ -1,3 +1,4 @@
+import 'package:client_app/screens/confirmation/confirmation_screen.dart';
 import 'package:client_app/screens/door/door_screen.dart';
 import 'package:client_app/screens/login/login_screen.dart';
 import 'package:client_app/screens/scanner/describe_problem_screen.dart';
@@ -27,7 +28,7 @@ GoRouter createRouter(bool isAuthenticated) {
       ),
       GoRoute(
         path: '/app/scanner',
-        builder: (context, state) => ScannerScreen(),
+        builder: (context, state) => const ScannerScreen(),
       ),
       GoRoute(
         path: '/app/door',
@@ -56,6 +57,10 @@ GoRouter createRouter(bool isAuthenticated) {
       GoRoute(
         path: '/app/scanner/settings',
         builder: (context, state) => const ProfileScreen(),
+      ),
+      GoRoute(
+        path: '/app/scanner/report_comment/confirmation',
+        builder: (context, state) => const ConfirmationScreen(),
       ),
     ],
   );
