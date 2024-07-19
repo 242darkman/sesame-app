@@ -57,6 +57,20 @@ class CustomMenu extends StatelessWidget {
               },
             ),
           ),
+          Padding(
+            padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+            child: IconButton(
+              icon: const Icon(
+                Icons.list,
+                color: Color(0xFF779DA0),
+                size: 35.0,
+              ),
+              onPressed: () {
+                showCantScanTextNotifier.value = false;
+                context.go('/app/scanner/reports');
+              },
+            ),
+          )
         ],
       ),
     );

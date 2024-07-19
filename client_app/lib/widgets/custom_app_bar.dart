@@ -19,7 +19,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       leading: IconButton(
         icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
         onPressed: () {
-          context.pop();
+          if (Navigator.canPop(context)) {
+            context.pop();
+          } else {
+            context.go('/app/scanner');
+          }
         },
       ),
       backgroundColor: const Color(0xFF779DA0),

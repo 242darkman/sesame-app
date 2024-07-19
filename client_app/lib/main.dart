@@ -15,7 +15,6 @@ final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
 final logger = Logger();
 final ValueNotifier<bool> showCantScanTextNotifier = ValueNotifier<bool>(false);
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await keycloakWrapper.initialize();
@@ -51,7 +50,7 @@ void main() async {
     if (token != null && !JwtDecoder.isExpired(token)) {
       final user = await keycloakWrapper.getUserInfo();
       userProvider.setUserInfo(accessToken: token, user: user);
-      final userId = user!['sub'];
+      final userId = user?['sub'];
       await webSocketService.connect(userId);
     }
   }
